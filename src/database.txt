@@ -1,0 +1,101 @@
+[
+    {
+        "id": 0,
+        "title": "laptop",
+        "description": "computadora portatil HP con 200GB de memoria 4GB ram",
+        "price": 15,
+        "thumbnail": "https://clipart-library.com/image_gallery2/Laptop-Free-Download-PNG.png",
+        "code": "LAP-002",
+        "stock": 5
+    },
+    {
+        "id": 1,
+        "title": "jostick",
+        "description": "jostick ps4",
+        "price": 10,
+        "thumbnail": "https://t4.ftcdn.net/jpg/05/54/32/73/360_F_554327363_bWtQVOj9zCn99bVik1rI6G9QR8BrusVz.jpg",
+        "code": "JOST-001",
+        "stock": 30
+    },
+    {
+        "id": 2,
+        "title": "Motorola G40",
+        "description": "motorola",
+        "price": 10,
+        "thumbnail": "https://motorolain.vtexassets.com/arquivos/ids/157084/Moto-G40-Fusion-pdp-kv-render-2-%E2%80%93-1391mpod1.png?v=637836507000370000",
+        "code": "MOT-001",
+        "stock": 7
+    },
+    {
+        "id": 3,
+        "title": "GTX 16 Series",
+        "description": "Placa de video Nvidia MSI",
+        "price": 500,
+        "thumbnail": "https://http2.mlstatic.com/D_NQ_NP_774305-MLA41491317983_042020-O.webp",
+        "code": "GTX-1660",
+        "stock": 15
+    },
+    {
+        "id": 4,
+        "title": "Mouse Logitech Negro",
+        "description": "Mouse Logitech gamer inalambrico",
+        "price": 44,
+        "thumbnail": "https://http2.mlstatic.com/D_NQ_NP_977588-MLA51172463642_082022-O.webp",
+        "code": "MOUSE-G305",
+        "stock": 20
+    },
+    {
+        "id": 5,
+        "title": "Teclado Logitech Negro",
+        "description": "Teclado QWERTY español españa negro",
+        "price": 40,
+        "thumbnail": "https://http2.mlstatic.com/D_NQ_NP_695448-MLA46516796264_062021-O.webp",
+        "code": "TECLA-K835",
+        "stock": 50
+    },
+    {
+        "id": 6,
+        "title": "Monito Samsung Full HD",
+        "description": "Monitor Gamer Samsung 24'' gris oscuro",
+        "price": 92,
+        "thumbnail": "https://http2.mlstatic.com/D_NQ_NP_973781-MLA48131216539_112021-O.webp",
+        "code": "MON-004",
+        "stock": 11
+    },
+    {
+        "id": 7,
+        "title": "Intel I7",
+        "description": "Intel Core i7 10700 con Gráfica integrada",
+        "price": 295,
+        "thumbnail": "https://http2.mlstatic.com/D_NQ_NP_929815-MLA42767633540_072020-O.webp",
+        "code": "INTEL-004",
+        "stock": 40
+    },
+    {
+        "id": 8,
+        "title": "Placa Madre Asus Prime B460m-a",
+        "description": "Motherboard Asus Prime R2.0 Intel Socket 1200 Intel Color Negro",
+        "price": 150,
+        "thumbnail": "https://http2.mlstatic.com/D_NQ_NP_739161-MLA48407790592_122021-O.webp",
+        "code": "PLAM-001",
+        "stock": 1
+    },
+    {
+        "id": 9,
+        "title": "Parlante PC Genius",
+        "description": "Parlante Genius SP-Q160 rojo",
+        "price": 12,
+        "thumbnail": "https://http2.mlstatic.com/D_NQ_NP_819243-MLA43209279022_082020-O.webp",
+        "code": "PARL-001",
+        "stock": 100
+    },
+    {
+        "id": 10,
+        "title": "MousePad Logitech",
+        "description": "Mousepad Flexible Logitech Studio",
+        "price": 25,
+        "thumbnail": "https://http2.mlstatic.com/D_NQ_NP_855116-MLA49182632127_022022-O.webp",
+        "code": "MOL-001",
+        "stock": 57
+    }
+]
