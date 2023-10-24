@@ -1,6 +1,6 @@
-const fs = require("fs");
+import fs from "fs";
 
-module.exports = class ProductManager {
+export default class ProductManager {
   constructor(path) {
     this.products = [];
     this.path = path;
@@ -10,8 +10,13 @@ module.exports = class ProductManager {
     const { title, description, price, thumbnail, code, stock } = object;
 
     //Valida los campos vacios
-    if (!title || !description || !price || !thumbnail || !code || !stock)
-      return;
+    if (!title || !description || !price || !code || !stock) return;
+
+    if (fs.existsSync(this.path)) {
+      const leerArchivo = await fs.promises.readFile(this.path, "utf-8");
+      const getJson = JSON.parse(leerArchivo);
+      this.products = getJson;
+    } else return console.error("No se puede leer el archivo ya que no existe");
 
     //Si la lista NO esta vacia
     if (this.products.length !== 0) {
@@ -54,63 +59,53 @@ module.exports = class ProductManager {
 
     try {
       await fs.promises.writeFile(this.path, JSON.stringify(this.products));
-      return {message: 'data add in the db'}
+      return { message: "data add in the db" };
     } catch (error) {
       console.error(error);
-      return {message: 'no se logro escribir el archivo'}
+      return { message: "no se logro escribir el archivo" };
     }
-    
   }
 
-  updateProduct(id, object) {
-    const { title, description, price, thumbnail, code, stock } = object;
-    //Valida los campos vacios
-    if (!title || !description || !price || !thumbnail || !code || !stock)
-      return;
-
+  async updateProduct(id, object) {
     if (fs.existsSync(this.path)) {
-      fs.promises
-        .readFile(this.path, "utf-8")
-        .then((result) => {
-          const getJson = JSON.parse(result);
-          let productById = getJson.find((elem) => elem.id === id);
+      const leerArchivo = await fs.promises.readFile(this.path, "utf-8");
+      const getJson = JSON.parse(leerArchivo);
+      let productById = getJson.find((elem) => elem.id == id);
 
-          if (productById) {
-            const update = getJson.map((elem) => {
-              if (elem.id == id) return { id, ...object };
-              else return elem;
-            });
+      if (productById) {
+        const update = getJson.map((elem) => {
+          if (elem.id == id) return { id: parseInt(id), ...object };
+          else return elem;
+        });
 
-            //sobre escribimos el archivo
-            fs.promises.writeFile(this.path, JSON.stringify(update));
-          } else console.error("Not Found");
-        })
-        .catch((e) => console.error(e));
-    } else console.error("No se puede leer el archivo ya que no existe");
+        //sobre escribimos el archivo
+        fs.promises.writeFile(this.path, JSON.stringify(update));
+      } else
+        return console.error("No se puede leer el archivo ya que no existe");
+    }
   }
-
-  deleteProduct(id) {
+  
+  async deleteProduct(pid) {
     if (fs.existsSync(this.path)) {
-      fs.promises
-        .readFile(this.path, "utf-8")
-        .then((result) => {
-          const getJson = JSON.parse(result);
-          const productById = getJson.find((elem) => elem.id === id);
+      const leerArchivo = await fs.promises.readFile(this.path, "utf-8");
+      const getListProducts = JSON.parse(leerArchivo);
 
-          if (productById) {
-            //eliminando el producto
-            //filtramos el array obteniendo todos los datos menos el de id enviado
-            const deleteProductById = getJson.filter((elem) => elem.id !== id);
+      const productById = getListProducts.find((elem) => elem.id == pid);
 
-            //sobre escribimos el archivo
-            fs.promises.writeFile(
-              this.path,
-              JSON.stringify([...deleteProductById])
-            );
-          } else console.error("Not Found");
-        })
-        .catch((e) => console.error(e));
-    } else console.error("No se puede leer el archivo ya que no existe");
+      if (productById) {
+        //eliminando el producto
+        //filtramos el array obteniendo todos los datos menos el de id enviado
+        const deleteProductById = getListProducts.filter(
+          (elem) => elem.id != pid
+        );
+
+        //sobre escribimos el archivo
+        fs.promises.writeFile(
+          this.path,
+          JSON.stringify([...deleteProductById])
+        );
+      } else console.error("Not Found");
+    } else return console.error("No se puede leer el archivo ya que no existe");
   }
 
   async getProducts() {
@@ -132,10 +127,8 @@ module.exports = class ProductManager {
         if (productById) return productById;
         else return { message: "el producto no existe" };
       } catch (error) {
-        console.error(error);
         return { message: "Ocurrio un error al leer el archivo" };
       }
     } else return { message: "No se puede leer el archivo ya que no existe" };
-    
   }
-};
+}

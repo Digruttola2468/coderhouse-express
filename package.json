@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "curso coderhouse",
   "main": "./src/app.js",
+  "type": "module",
   "scripts": {
-    "start": "node ./src/app.js"
+    "start": "nodemon ./src/app.js"
   },
   "author": "ivan di gruttola",
   "license": "ISC",

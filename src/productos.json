@@ -19,12 +19,10 @@
     },
     {
         "id": 2,
-        "title": "Motorola G40",
-        "description": "motorola",
-        "price": 10,
-        "thumbnail": "https://motorolain.vtexassets.com/arquivos/ids/157084/Moto-G40-Fusion-pdp-kv-render-2-%E2%80%93-1391mpod1.png?v=637836507000370000",
-        "code": "MOT-001",
-        "stock": 7
+        "title": "GTA VI",
+        "description": "Juego de ps4",
+        "price": 500,
+        "stock": 30
     },
     {
         "id": 3,
@@ -97,5 +95,13 @@
         "thumbnail": "https://http2.mlstatic.com/D_NQ_NP_855116-MLA49182632127_022022-O.webp",
         "code": "MOL-001",
         "stock": 57
+    },
+    {
+        "id": 11,
+        "title": "GTA V",
+        "description": "Juego de ps4 - ps5 de vida simulada GTA V",
+        "price": 100,
+        "code": "GAM-001",
+        "stock": 20
     }
 ]
