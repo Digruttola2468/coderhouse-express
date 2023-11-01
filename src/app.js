@@ -1,12 +1,23 @@
 import express from "express";
-import ProductsRouter from './routers/products.routes.js'
-import CarritoRouter from './routers/carrito.routes.js'
+import handlebars from "express-handlebars";
+
+import ProductsRouter from "./routers/products.routes.js";
+import CarritoRouter from "./routers/carrito.routes.js";
+import viewsRouter from './routers/views.routes.js'
+import { Server } from "socket.io";
 
 const servidor = express();
 
-servidor.use(express.json())
+//Inicializamos el motor de plantillas
+servidor.engine("handlebars", handlebars.engine());
+servidor.set("views", "./src/views");
+servidor.set("view engine", "handlebars");
 
-servidor.use('/api', ProductsRouter);
-servidor.use('/api', CarritoRouter)
+servidor.use("/static", express.static("./src/public"));
+servidor.use(express.json());
 
-servidor.listen(8080, () => console.log("Listening PORT 8080"));
+servidor.use(viewsRouter);
+servidor.use("/api", ProductsRouter);
+servidor.use("/api", CarritoRouter);
+
+export const httpServer = servidor.listen(8080, () => console.log("Listening PORT 8080"));

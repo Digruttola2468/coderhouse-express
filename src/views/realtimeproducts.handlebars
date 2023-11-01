@@ -1,0 +1,44 @@
+<form action="/realtimeproducts" method="post" >
+   <h2>Crear nuevo producto</h2>
+    Title: <input name="title" id="title">
+    <br>
+    Description: <input name="descripcion" id="descripcion">
+    <br>
+    Code: <input name="code" id="code">
+    <br>
+    Price: <input name="precio" id="precio">
+    <br>
+    Stock: <input name="stock" id="stock">
+    <br>
+    <button type="submit" id="button">Agregar Product</button>
+
+    <script>
+      const socket = io();
+
+      document.querySelector('#button').addEventListener('click', () => {
+         
+         let title = document.querySelector('#title').value;
+         let descripcion = document.querySelector('#descripcion').value;
+         let code = document.querySelector('#code').value;
+         let price = document.querySelector('#precio').value;
+         let stock = document.querySelector('#stock').value;
+
+         socket.emit("products", {title,descripcion,code,price,stock});
+      });
+
+      
+    </script>
+</form>
+
+<div style="width: 100%;display: grid;grid-template-columns: repeat(auto-fit,minmax(320px,1fr));gap: 10px;margin-top: 10px;">
+{{#each listProducts}}
+   <div style="border: gray 1px solid; width: 320px;border-radius: 10px;padding: 8px;">
+     <h1 style="text-align: center;"> {{this.title}} </h1>
+     <p> <b>Descripcion</b>: {{this.description}} </p>
+     <div style="display: flex; flex-direction: row;justify-content: space-between;">
+        <p> <b> USD${{this.price}} </b> </p>
+        <p> <b> Cantidad:{{this.stock}} </b> </p>
+     </div>
+   </div>
+{{/each}}
+</div>
