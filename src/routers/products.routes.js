@@ -79,7 +79,7 @@ ruta.put("/products/:pid", async (req, res) => {
   const pid = req.params.pid;
 
   try {
-    product.updateProduct(pid,body);
+    await product.updateProduct(pid,body);
     return res.json({ message: "update success" });
   } catch (error) {
     return res.status(404).json({ message: "not found" });

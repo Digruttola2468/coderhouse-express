@@ -73,8 +73,28 @@ export default class ProductManager {
       let productById = getJson.find((elem) => elem.id == id);
 
       if (productById) {
+        let enviar = {};
+
+        if (object.title != null) enviar.title = object.title;
+        else enviar.title = productById.title;
+
+        if (object.description != null) enviar.description = object.description;
+        else enviar.description = productById.description;
+
+        if (object.price != null) enviar.price = object.price;
+        else enviar.price = productById.price;
+
+        if (object.code != null) enviar.code = object.code;
+        else enviar.code = productById.code;
+
+        if (object.stock != null) enviar.stock = object.stock;
+        else enviar.stock = productById.stock;
+
+        if (object.thumbnail != null) enviar.thumbnail = object.thumbnail;
+        else enviar.thumbnail = productById.thumbnail;
+
         const update = getJson.map((elem) => {
-          if (elem.id == id) return { id: parseInt(id), ...object };
+          if (elem.id == id) return { id: parseInt(id), ...enviar };
           else return elem;
         });
 
@@ -84,7 +104,7 @@ export default class ProductManager {
         return console.error("No se puede leer el archivo ya que no existe");
     }
   }
-  
+
   async deleteProduct(pid) {
     if (fs.existsSync(this.path)) {
       const leerArchivo = await fs.promises.readFile(this.path, "utf-8");

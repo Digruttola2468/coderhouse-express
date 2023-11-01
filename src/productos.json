@@ -92,16 +92,8 @@
         "title": "MousePad Logitech",
         "description": "Mousepad Flexible Logitech Studio",
         "price": 25,
-        "thumbnail": "https://http2.mlstatic.com/D_NQ_NP_855116-MLA49182632127_022022-O.webp",
         "code": "MOL-001",
-        "stock": 57
-    },
-    {
-        "id": 11,
-        "title": "GTA V",
-        "description": "Juego de ps4 - ps5 de vida simulada GTA V",
-        "price": 100,
-        "code": "GAM-001",
-        "stock": 20
+        "stock": 57,
+        "thumbnail": "https://http2.mlstatic.com/D_NQ_NP_855116-MLA49182632127_022022-O.webp"
     }
 ]
