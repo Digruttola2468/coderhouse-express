@@ -21,29 +21,21 @@ ruta.get("/realtimeproducts", async (req, res) => {
 
   const product = new ProductManager("./src/productos.json");
 
-  const listProducts = await product.getProducts();
-
   socketServer.on("connection", (socket) => {
     console.log("CLIENTE CONECTADO");
 
-    socket.on("products", (data) => {
-      listProducts.push(data);
+    socket.on("products", async (data) => {
+      await product.addProduct(data);
     });
 
   });
+
+  let listProducts = await product.getProducts();
 
   res.render("realtimeproducts", {
     listProducts,
     title: "List Products RealTime",
   });
-});
-
-ruta.post("/realtimeproducts", (req, res) => {
-  const result = req.query;
-//{title,descripcion,code,precio,stock}
-  console.log(result);
-
-  res.json(result);
 });
 
 export default ruta;

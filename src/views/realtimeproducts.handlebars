@@ -1,4 +1,4 @@
-<form action="/realtimeproducts" method="post" >
+<form id="formAddNewProduct" >
    <h2>Crear nuevo producto</h2>
     Title: <input name="title" id="title">
     <br>
@@ -11,24 +11,25 @@
     Stock: <input name="stock" id="stock">
     <br>
     <button type="submit" id="button">Agregar Product</button>
-
-    <script>
-      const socket = io();
-
-      document.querySelector('#button').addEventListener('click', () => {
-         
-         let title = document.querySelector('#title').value;
-         let descripcion = document.querySelector('#descripcion').value;
-         let code = document.querySelector('#code').value;
-         let price = document.querySelector('#precio').value;
-         let stock = document.querySelector('#stock').value;
-
-         socket.emit("products", {title,descripcion,code,price,stock});
-      });
-
-      
-    </script>
 </form>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+   const socket = io();
+
+document.querySelector("#formAddNewProduct").addEventListener("submit", (evt) => {
+    evt.preventDefault();
+
+  let title = document.querySelector("#title").value;
+  let description = document.querySelector("#descripcion").value;
+  let code = document.querySelector("#code").value;
+  let price = document.querySelector("#precio").value;
+  let stock = document.querySelector("#stock").value;
+
+  socket.emit("products", { title, description, code, price, stock });
+});
+
+</script>
 
 <div style="width: 100%;display: grid;grid-template-columns: repeat(auto-fit,minmax(320px,1fr));gap: 10px;margin-top: 10px;">
 {{#each listProducts}}
@@ -42,3 +43,5 @@
    </div>
 {{/each}}
 </div>
+
+
