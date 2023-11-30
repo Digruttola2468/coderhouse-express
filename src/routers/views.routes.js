@@ -91,9 +91,22 @@ ruta.get("/product/:pid", async (req, res) => {
 
 ruta.get("/carts/:cid", async (req, res) => {
   
-  res.render('cards', {
+  const cid = req.params.cid;
+  try {
+    const carrito = await cardsModel.findById(cid).populate("products.product").lean();
+    
+    console.log(JSON.stringify(carrito,null,"\t"));
 
-  })
+    res.render('cards', {
+      data: carrito
+    })
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "error: no se logro leer" });
+  }
+
+  
 });
 
 export default ruta;

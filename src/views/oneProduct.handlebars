@@ -19,8 +19,9 @@
 
    button.addEventListener('click', () => {
       //"{{data._id}}"
-      fetch('/api/1/product/{{data._id}}', {method: 'POST'}).then(() => {
+      fetch('/api/6567ebd903c4b79bf2dcaeb1/product/{{data._id}}', {method: 'POST'}).then(() => {
          alert('Ya esta agregado al carrito');
+         window.location.href = "/";
       }).catch(e => {
          alert('No se agrego al carrito');
          console.log(e);

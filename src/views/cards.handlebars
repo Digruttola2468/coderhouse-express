@@ -1,0 +1,12 @@
+<h1 style="text-align: center;">CARRITO</h1>
+<div style="width: 100%;display: grid;grid-template-columns: repeat(auto-fit,minmax(340px,1fr));gap: 10px;">
+    {{#each data.products}}
+    <div style="position:relative; border: gray 1px solid; width: 320px;border-radius: 10px;padding: 8px;">
+        <a href="/product/{{this.product._id}}" style="text-align: center;"> {{this.product.title}} </a>
+        <p> <b>Descripcion</b>: {{this.product.description}} </p>
+        <div style="display: flex; flex-direction: row;justify-content: space-between;">
+            <p> <b> Cantidad:{{this.quantity}} </b> </p>
+        </div>
+    </div>
+    {{/each}}
+</div>
