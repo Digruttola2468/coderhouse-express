@@ -17,7 +17,7 @@ ruta.get("/products", async (req, res) => {
       {},
       {
         limit,
-        page
+        page,
       }
     );
 
@@ -64,7 +64,7 @@ ruta.get("/products", async (req, res) => {
     res.send(enviar);
   } catch (error) {
     console.log(error);
-    res.status(500).send({status: 'error', message: 'Something Wrong'});
+    res.status(500).send({ status: "error", message: "Something Wrong" });
   }
 });
 
@@ -72,8 +72,8 @@ ruta.get("/product/:pid", async (req, res) => {
   try {
     const { pid } = req.params;
 
-    const productOne = await productModel.findOne({_id: pid})
-    
+    const productOne = await productModel.findOne({ _id: pid });
+
     res.send(productOne);
   } catch (error) {
     console.error(error);
@@ -89,8 +89,9 @@ ruta.post("/products", async (req, res) => {
     price,
     status,
     stock,
-    category,
-    thumbnails,
+    categoria,
+    thumbnail,
+    disponible,
   } = req.body;
 
   //Valida los campos vacios
@@ -103,13 +104,18 @@ ruta.post("/products", async (req, res) => {
     code,
     price,
     stock,
-    category,
-    thumbnails,
+    categoria,
+    thumbnail,
+    disponible,
   };
 
+  console.log(object);
+
   try {
-    const result = await product.addProduct(object);
+    const result = await productModel.insertOne(object);
+
     console.log(result);
+
     res.json({ message: "success" });
   } catch (error) {
     console.error(error);
@@ -122,18 +128,20 @@ ruta.put("/products/:pid", async (req, res) => {
   const pid = req.params.pid;
 
   try {
-    await product.updateProduct(pid, body);
+    const result = await productModel.updateOne({ _id: pid }, body);
+    console.log(result);
     return res.json({ message: "update success" });
   } catch (error) {
     return res.status(404).json({ message: "not found" });
   }
 });
 
-ruta.delete("/products/:pid", (req, res) => {
+ruta.delete("/products/:pid", async (req, res) => {
   const id = req.params.pid;
 
   try {
-    product.deleteProduct(id);
+    const result = await productModel.deleteOne({ _id: id });
+    console.log(result);
     return res.json({ message: "delete success" });
   } catch (error) {
     return res.status(404).json({ message: "not found" });
