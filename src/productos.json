@@ -1,6 +1,5 @@
 [
     {
-        "id": 0,
         "title": "laptop",
         "description": "computadora portatil HP con 200GB de memoria 4GB ram",
         "price": 15,
@@ -11,7 +10,6 @@
         "disponible": false
     },
     {
-        "id": 1,
         "title": "jostick",
         "description": "jostick ps4",
         "price": 10,
@@ -22,7 +20,6 @@
         "disponible": true
     },
     {
-        "id": 2,
         "title": "GTA VI",
         "description": "Juego de ps4",
         "price": 500,
@@ -31,7 +28,6 @@
         "disponible": true
     },
     {
-        "id": 3,
         "title": "GTX 16 Series",
         "description": "Placa de video Nvidia MSI",
         "price": 500,
@@ -42,7 +38,6 @@
         "disponible": true
     },
     {
-        "id": 4,
         "title": "Mouse Logitech Negro",
         "description": "Mouse Logitech gamer inalambrico",
         "price": 44,
@@ -53,7 +48,6 @@
         "disponible": true
     },
     {
-        "id": 5,
         "title": "Teclado Logitech Negro",
         "description": "Teclado QWERTY español españa negro",
         "price": 40,
@@ -64,7 +58,6 @@
         "disponible": false
     },
     {
-        "id": 6,
         "title": "Monito Samsung Full HD",
         "description": "Monitor Gamer Samsung 24'' gris oscuro",
         "price": 92,
@@ -75,7 +68,6 @@
         "disponible": true
     },
     {
-        "id": 7,
         "title": "Intel I7",
         "description": "Intel Core i7 10700 con Gráfica integrada",
         "price": 295,
@@ -86,7 +78,6 @@
         "disponible": true
     },
     {
-        "id": 8,
         "title": "Placa Madre Asus Prime B460m-a",
         "description": "Motherboard Asus Prime R2.0 Intel Socket 1200 Intel Color Negro",
         "price": 150,
@@ -97,7 +88,6 @@
         "disponible": true
     },
     {
-        "id": 9,
         "title": "Parlante PC Genius",
         "description": "Parlante Genius SP-Q160 rojo",
         "price": 12,
@@ -108,7 +98,6 @@
         "disponible": false
     },
     {
-        "id": 10,
         "title": "MousePad Logitech",
         "description": "Mousepad Flexible Logitech Studio",
         "price": 25,

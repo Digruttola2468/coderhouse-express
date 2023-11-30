@@ -6,7 +6,7 @@ const cardsSchema = mongoose.Schema({
             {
                 product: {
                     type: mongoose.Schema.Types.ObjectId,
-                    ref: ''
+                    ref: 'products'
                 },
                 quantity: Number
             }

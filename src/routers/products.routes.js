@@ -4,7 +4,7 @@ import productModel from "../models/products.model.js";
 
 const ruta = Router();
 
-const product = new ProductManager("./src/productos.json");
+//const product = new ProductManager("./src/productos.json");
 
 ruta.get("/products", async (req, res) => {
   try {
@@ -87,7 +87,6 @@ ruta.post("/products", async (req, res) => {
     description,
     code,
     price,
-    status,
     stock,
     categoria,
     thumbnail,
@@ -112,7 +111,7 @@ ruta.post("/products", async (req, res) => {
   console.log(object);
 
   try {
-    const result = await productModel.insertOne(object);
+    const result = await productModel.create(object);
 
     console.log(result);
 
