@@ -1,0 +1,21 @@
+<div style="width: 100%;display: grid;grid-template-columns: repeat(auto-fit,minmax(340px,1fr));gap: 10px;">
+    {{#each data.docs}}
+    <div style="position:relative; border: gray 1px solid; width: 320px;border-radius: 10px;padding: 8px;">
+        <a href="/product/{{this._id}}" style="text-align: center;"> {{this.title}} </a>
+        <p> <b>Descripcion</b>: {{this.description}} </p>
+        <div style="display: flex; flex-direction: row;justify-content: space-between;">
+            <p> <b> USD${{this.price}} </b> </p>
+            <p> <b> Cantidad:{{this.stock}} </b> </p>
+        </div>
+    </div>
+    {{/each}}
+</div>
+<div style="width: 100%;display: flex; flex-direction: row; justify-content: center; align-items: center;">
+    {{#if data.hasPrevPage}}
+        <a href={{data.prevLink}}>Prev</a>
+    {{/if}}
+    <span style="margin-left: 5px;margin-right: 5px">{{{data.page}}} / {{{data.totalPages}}}</span>
+    {{#if data.hasNextPage}}
+        <a href={{data.nextLink}}>Next</a>
+    {{/if}}
+</div>

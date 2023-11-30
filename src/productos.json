@@ -6,7 +6,9 @@
         "price": 15,
         "thumbnail": "https://clipart-library.com/image_gallery2/Laptop-Free-Download-PNG.png",
         "code": "LAP-002",
-        "stock": 5
+        "stock": 5,
+        "categoria": "Electrico",
+        "disponible": false
     },
     {
         "id": 1,
@@ -15,14 +17,18 @@
         "price": 10,
         "thumbnail": "https://t4.ftcdn.net/jpg/05/54/32/73/360_F_554327363_bWtQVOj9zCn99bVik1rI6G9QR8BrusVz.jpg",
         "code": "JOST-001",
-        "stock": 30
+        "stock": 30,
+        "categoria": "Juegos PS4",
+        "disponible": true
     },
     {
         "id": 2,
         "title": "GTA VI",
         "description": "Juego de ps4",
         "price": 500,
-        "stock": 30
+        "stock": 30,
+        "categoria": "Juegos PS4",
+        "disponible": true
     },
     {
         "id": 3,
@@ -31,7 +37,9 @@
         "price": 500,
         "thumbnail": "https://http2.mlstatic.com/D_NQ_NP_774305-MLA41491317983_042020-O.webp",
         "code": "GTX-1660",
-        "stock": 15
+        "stock": 15,
+        "categoria": "Electrico",
+        "disponible": true
     },
     {
         "id": 4,
@@ -40,7 +48,9 @@
         "price": 44,
         "thumbnail": "https://http2.mlstatic.com/D_NQ_NP_977588-MLA51172463642_082022-O.webp",
         "code": "MOUSE-G305",
-        "stock": 20
+        "stock": 20,
+        "categoria": "Electrico",
+        "disponible": true
     },
     {
         "id": 5,
@@ -49,7 +59,9 @@
         "price": 40,
         "thumbnail": "https://http2.mlstatic.com/D_NQ_NP_695448-MLA46516796264_062021-O.webp",
         "code": "TECLA-K835",
-        "stock": 50
+        "stock": 50,
+        "categoria": "Electrico",
+        "disponible": false
     },
     {
         "id": 6,
@@ -58,7 +70,9 @@
         "price": 92,
         "thumbnail": "https://http2.mlstatic.com/D_NQ_NP_973781-MLA48131216539_112021-O.webp",
         "code": "MON-004",
-        "stock": 11
+        "stock": 11,
+        "categoria": "Electrico",
+        "disponible": true
     },
     {
         "id": 7,
@@ -67,7 +81,9 @@
         "price": 295,
         "thumbnail": "https://http2.mlstatic.com/D_NQ_NP_929815-MLA42767633540_072020-O.webp",
         "code": "INTEL-004",
-        "stock": 40
+        "stock": 40,
+        "categoria": "Electrico",
+        "disponible": true
     },
     {
         "id": 8,
@@ -76,7 +92,9 @@
         "price": 150,
         "thumbnail": "https://http2.mlstatic.com/D_NQ_NP_739161-MLA48407790592_122021-O.webp",
         "code": "PLAM-001",
-        "stock": 1
+        "stock": 1,
+        "categoria": "Electrico",
+        "disponible": true
     },
     {
         "id": 9,
@@ -85,7 +103,9 @@
         "price": 12,
         "thumbnail": "https://http2.mlstatic.com/D_NQ_NP_819243-MLA43209279022_082020-O.webp",
         "code": "PARL-001",
-        "stock": 100
+        "stock": 100,
+        "categoria": "Electrico",
+        "disponible": false
     },
     {
         "id": 10,
@@ -94,6 +114,8 @@
         "price": 25,
         "code": "MOL-001",
         "stock": 57,
-        "thumbnail": "https://http2.mlstatic.com/D_NQ_NP_855116-MLA49182632127_022022-O.webp"
+        "thumbnail": "https://http2.mlstatic.com/D_NQ_NP_855116-MLA49182632127_022022-O.webp",
+        "categoria": "Electrico",
+        "disponible": false
     }
 ]
