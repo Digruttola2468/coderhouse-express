@@ -108,12 +108,8 @@ ruta.post("/products", async (req, res) => {
     disponible,
   };
 
-  console.log(object);
-
   try {
-    const result = await productModel.create(object);
-
-    console.log(result);
+    await productModel.create(object);
 
     res.json({ message: "success" });
   } catch (error) {
@@ -127,8 +123,7 @@ ruta.put("/products/:pid", async (req, res) => {
   const pid = req.params.pid;
 
   try {
-    const result = await productModel.updateOne({ _id: pid }, body);
-    console.log(result);
+    await productModel.updateOne({ _id: pid }, body);
     return res.json({ message: "update success" });
   } catch (error) {
     return res.status(404).json({ message: "not found" });
@@ -139,8 +134,7 @@ ruta.delete("/products/:pid", async (req, res) => {
   const id = req.params.pid;
 
   try {
-    const result = await productModel.deleteOne({ _id: id });
-    console.log(result);
+    await productModel.deleteOne({ _id: id });
     return res.json({ message: "delete success" });
   } catch (error) {
     return res.status(404).json({ message: "not found" });

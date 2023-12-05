@@ -23,8 +23,8 @@ ruta.get("/carts/:cid", async (req, res) => {
 
 ruta.post("/carts", async (req, res) => {
   try {
-    await cardModel.create({ products: [] });
-    res.json({ message: "success" });
+    const result = await cardModel.create({ products: [] });
+    res.json({ id: result._id, products: result.products, message: "success" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "error: no se logro leer el archivo" });
@@ -76,11 +76,10 @@ ruta.delete("/carts/:cid/products/:pid", async (req, res) => {
         //Eliminar el carrito el producto seleccionado
 
         const filter = cardOne.products.filter((elem) => elem._id != pid);
-        console.log(filter);
         await cardModel.updateOne(
           { _id: cid },
           {
-            products: filter
+            products: filter,
           }
         );
 
@@ -101,11 +100,11 @@ ruta.delete("/carts/:cid", async (req, res) => {
 
     //Verificamos si existe el carrito
     if (cardOne) {
-        cardOne.products = [];
+      cardOne.products = [];
 
-        await cardModel.updateOne({ _id: cid }, cardOne);
+      await cardModel.updateOne({ _id: cid }, cardOne);
 
-        res.send({ message: "success" });
+      res.send({ message: "success" });
     }
   } catch (error) {
     console.error(error);

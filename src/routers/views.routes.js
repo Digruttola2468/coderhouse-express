@@ -65,8 +65,6 @@ ruta.get("/products", async (req, res) => {
   products.prevLink = prevLink;
   products.nextLink = nextLink;
 
-  console.log(products);
-
   res.render("products", {
     data: products,
   });
@@ -84,9 +82,7 @@ ruta.get("/product/:pid", async (req, res) => {
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Ocurrio un error en el servidor" });
-  }
-
-  
+  }  
 });
 
 ruta.get("/carts/:cid", async (req, res) => {
@@ -94,9 +90,6 @@ ruta.get("/carts/:cid", async (req, res) => {
   const cid = req.params.cid;
   try {
     const carrito = await cardsModel.findById(cid).populate("products.product").lean();
-    
-    console.log(JSON.stringify(carrito,null,"\t"));
-
     res.render('cards', {
       data: carrito
     })
