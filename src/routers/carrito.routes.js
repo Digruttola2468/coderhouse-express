@@ -34,7 +34,7 @@ ruta.post("/carts", async (req, res) => {
 ruta.post("/:cid/product/:pid", async (req, res) => {
   const cid = req.params.cid;
   const pid = req.params.pid;
-  const quantity = parseInt(req.query?.quantity ?? 1);
+  let quantity = parseInt(req.query?.quantity ?? 1);
 
   try {
     const cardOne = await cardModel.findOne({ _id: cid });
@@ -44,11 +44,33 @@ ruta.post("/:cid/product/:pid", async (req, res) => {
       //Verificamos si existe ese producto
       const productOne = await productsModel.findOne({ _id: pid });
       if (productOne) {
+        
+        const findSameProductSameCarrito = cardOne.products.find(elem => elem.product == productOne._id.toString());
+        
+
+        // Si existe el mismo producto en el mismo carrito
+        if (findSameProductSameCarrito) {
+          quantity += findSameProductSameCarrito.quantity;
+
+          const listCarritoProducts = cardOne.products.map(elem => {
+            if (elem.product == productOne._id.toString()) 
+              return {...elem, quantity};
+            else return elem;
+          });
+
+          cardOne.products = listCarritoProducts;
+
+          await cardModel.updateOne({ _id: cid }, cardOne);
+
+          return res.send({ message: "success" });
+        }
+
+        console.log({ product: pid, quantity: quantity });
         cardOne.products.push({ product: pid, quantity: quantity });
 
         await cardModel.updateOne({ _id: cid }, cardOne);
 
-        res.send({ message: "success" });
+        return res.send({ message: "success" });
       } else return res.status(404).json({ message: "Not Found" });
     }
   } catch (error) {
