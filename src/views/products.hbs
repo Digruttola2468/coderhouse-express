@@ -1,4 +1,15 @@
 <a href="/carts/656fb9eeaa9fe8d76786f2e3">Ver mi Carrito</a>
+<div>
+    <h1>Bienvendio {{user.first_name}}</h1>
+    <div>
+        <p>Nombre: {{user.first_name}}</p>
+        <p>Apellido: {{user.last_name}}</p>
+        <p>Edad: {{user.age}}</p>
+        <p>Email: {{user.email}}</p>
+        <p>Role: {{user.role}}</p>
+    </div>
+</div>
+<br>
 <div style="width: 100%;display: grid;grid-template-columns: repeat(auto-fit,minmax(340px,1fr));gap: 10px;">
     {{#each data.docs}}
     <div style="position:relative; border: gray 1px solid; width: 320px;border-radius: 10px;padding: 8px;">

@@ -8,18 +8,20 @@ import cardsModel from "../models/cards.model.js";
 
 const ruta = Router();
 
-ruta.get("/", async (req, res) => {
-  const product = new ProductManager("./src/productos.json");
+// Midlewares
+function justPublicWitoutSession(req, res, next) {
+  if (req.session?.user) return res.redirect("/products");
 
-  const listProducts = await product.getProducts();
+  return next();
+}
 
-  res.render("home", {
-    listProducts,
-    title: "List Products",
-  });
-});
+function auth(req, res, next) {
+  if (req.session?.user) return next();
 
-ruta.get("/realtimeproducts", async (req, res) => {
+  return res.redirect("/login");
+}
+
+ruta.get("/realtimeproducts",auth, async (req, res) => {
   const socketServer = new Server(httpServer);
 
   const product = new ProductManager("./src/productos.json");
@@ -40,9 +42,11 @@ ruta.get("/realtimeproducts", async (req, res) => {
   });
 });
 
-ruta.get("/products", async (req, res) => {
+ruta.get("/products",auth, async (req, res) => {
   const limit = parseInt(req.query?.limit ?? 10);
   const page = parseInt(req.query?.page ?? 1);
+
+  const user = req.session.user;
 
   const products = await productsModel.paginate(
     {},
@@ -67,14 +71,15 @@ ruta.get("/products", async (req, res) => {
 
   res.render("products", {
     data: products,
+    user
   });
 });
 
-ruta.get("/product/:pid", async (req, res) => {
+ruta.get("/product/:pid",auth, async (req, res) => {
   try {
     const { pid } = req.params;
 
-    const productOne = await productsModel.findOne({_id: pid}).lean();
+    const productOne = await productsModel.findOne({ _id: pid }).lean();
 
     res.render("oneProduct", {
       data: productOne,
@@ -82,24 +87,38 @@ ruta.get("/product/:pid", async (req, res) => {
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Ocurrio un error en el servidor" });
-  }  
+  }
 });
 
-ruta.get("/carts/:cid", async (req, res) => {
-  
+ruta.get("/carts/:cid",auth, async (req, res) => {
   const cid = req.params.cid;
   try {
-    const carrito = await cardsModel.findById(cid).populate("products.product").lean();
-    res.render('cards', {
-      data: carrito
-    })
-
+    const carrito = await cardsModel
+      .findById(cid)
+      .populate("products.product")
+      .lean();
+    res.render("cards", {
+      data: carrito,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "error: no se logro leer" });
   }
+});
 
-  
+//                Views Session
+
+// Renders ----------------------------------------------------------
+ruta.get("/", justPublicWitoutSession, (req, res) => {
+  return res.render("index", {});
+});
+
+ruta.get("/login", justPublicWitoutSession, (req, res) => {
+  return res.render("login", {});
+});
+
+ruta.get("/register", justPublicWitoutSession, (req, res) => {
+  return res.render("register", {});
 });
 
 export default ruta;
