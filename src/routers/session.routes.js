@@ -1,29 +1,46 @@
 import { Router } from "express";
 import UserModel from "../models/user.model.js";
+import passport from "passport";
 
 const router = Router();
 
-router.post("/login", async (req, res) => {
-  const { email, password } = req.body;
-  const user = await UserModel.findOne({ email, password });
-  if (!user) return res.status(404).send("User Not Found");
-
-  req.session.user = user;
-
-  return res.redirect("/products");
+router.get("/error", async (req, res) => {
+  res.send("Error al Autenticar con Github");
 });
 
-router.post("/register", async (req, res) => {
-  const user = req.body;
+router.get(
+  "/github",
+  passport.authenticate("github", { scope: ["user:email"] }),
+  async (req, res) => {}
+);
 
-  let role = "user";
-  if (user.email == "adminCoder@coder.com" && user.password == "adminCod3r123")
-    role = "admin";
+router.get(
+  "/githubcallback",
+  passport.authenticate("github", { failureRedirect: "/error" }),
+  (req, res) => {
+    req.session.user = req.user;
+    return res.redirect("/products");
+  }
+);
 
-  await UserModel.create({ ...user, role });
+router.post(
+  "/login",
+  passport.authenticate("login", { failureRedirect: "/" }),
+  async (req, res) => {
+    if (!req.user) return res.status(400).send("Credenciales Invalidos");
 
-  return res.redirect("/");
-});
+    req.session.user = req.user;
+    return res.redirect("/products");
+  }
+);
+
+router.post(
+  "/register",
+  passport.authenticate("register", { failureRedirect: "/" }),
+  async (req, res) => {
+    return res.redirect("/products");
+  }
+);
 
 router.get("/logout", (req, res) => {
   req.session.destroy((err) => {

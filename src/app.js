@@ -3,6 +3,9 @@ import session from "express-session";
 import MongoStore from "connect-mongo";
 import mongoose from "mongoose";
 import handlebars from 'express-handlebars';
+import passport from "passport";
+
+import inicializePassword from "./config/passport.config.js";
 
 import ProductsRouter from "./routers/products.routes.js";
 import CarritoRouter from "./routers/carrito.routes.js";
@@ -22,7 +25,7 @@ servidor.use(express.urlencoded({ extended: true }));
 
 //Inicializamos el motor de plantillas
 servidor.engine("hbs", handlebars.engine({extname: '.hbs'}));
-servidor.set("views", "./src/views");
+servidor.set("views", "./src/views"); 
 servidor.set("view engine", "hbs");
 
 //Configuracion de las mongo session
@@ -41,12 +44,16 @@ servidor.use(
 //Establecemos la carpeta /static como publica
 servidor.use("/static", express.static("./src/public"));
 
+inicializePassword();
+servidor.use(passport.initialize());
+servidor.use(passport.session());
+
 //Agregamos las rutas middleware
+servidor.use('/api/session', sessionRouter);
+
 servidor.use(viewsRouter);
 servidor.use("/api", ProductsRouter);
 servidor.use("/api", CarritoRouter);
-
-servidor.use('/api/session', sessionRouter);
 
 //Conectamos a mongoDB
 let httpServer = null;
