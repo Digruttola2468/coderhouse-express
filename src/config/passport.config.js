@@ -1,8 +1,14 @@
 import passport from "passport";
 import local from "passport-local";
 import UserModel from "../models/user.model.js";
-import { createHash, isValidPassword } from "../utils.js";
+import {
+  createHash,
+  isValidPassword,
+  authToken,
+  generateToken,
+} from "../utils.js";
 import GitHubStrategy from "passport-github2";
+import cardsModel from "../models/cards.model.js";
 
 const LocalStrategy = local.Strategy;
 
@@ -13,23 +19,28 @@ const inicializePassword = () => {
       {
         clientID: "458dd2c8a17338952980",
         clientSecret: "1fbee1d442e07a85aa9f8e3fcc1352c50a9bff71",
-        callbackURL: "http://localhost:8080/api/session/githubcallback",
+        callbackURL: "http://localhost:8080/api/session/githubcallback"
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
           const user = await UserModel.findOne({ email: profile._json.email });
           if (user) return done(null, user);
 
+          const result = await cardsModel.create({ products: [] });
+
           const newUser = await UserModel.create({
             first_name: profile._json.name,
-            last_name: '',
+            last_name: "",
             email: profile._json.email,
             age: null,
-            password: '',
-            role: 'user',
+            password: "",
+            role: "user",
+            cart: result._id
           });
 
-          return done(null, newUser);
+          const accessToken = generateToken(newUser);
+          
+          return done(null, accessToken);
         } catch (error) {
           return done("Error to login with github");
         }
@@ -50,20 +61,34 @@ const inicializePassword = () => {
           const user = await UserModel.findOne({ email: username });
           if (user) return done(null, false);
 
-          const newUser = {
-            first_name,
-            last_name,
-            email,
-            age,
-            password: createHash(password),
-          };
+          //Creamos el carrito
+          try {
+            const result = await cardsModel.create({ products: [] });
 
-          let role = "user";
-          if (email == "adminCoder@coder.com" && password == "adminCod3r123")
-            role = "admin";
+            const newUser = {
+              first_name,
+              last_name,
+              email,
+              age,
+              password: createHash(password),
+              cart: result._id,
+            };
 
-          const result = await UserModel.create({ ...newUser, role });
-          return done(null, result);
+            let role = "user";
+            if (email == "adminCoder@coder.com" && password == "adminCod3r123")
+              role = "admin";
+
+            await UserModel.create({ ...newUser, role });
+            
+            const accessToken = generateToken(newUser);
+            req.token = accessToken;
+            return done(null, accessToken);
+          } catch (error) {
+            console.error(error);
+            res
+              .status(500)
+              .json({ message: "error: no se logro leer el archivo" });
+          }
         } catch (error) {
           done("Error to register\n" + error);
         }
@@ -88,6 +113,24 @@ const inicializePassword = () => {
         } catch (error) {
           return done("Error Login: " + error);
         }
+      }
+    )
+  );
+
+  passport.use(
+    "current",
+    new LocalStrategy(
+      { passReqToCallback: true },
+      (req, username, password, done) => {
+        //Obtenemos de la cookie
+        const token = req.token;
+
+        let decoredToken = {};
+
+        try {
+          decoredToken = jwt.verify(token, JWT_SECRET);
+        } catch {}
+        return done(null, decoredToken);
       }
     )
   );

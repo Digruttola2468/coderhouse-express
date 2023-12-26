@@ -1,8 +1,8 @@
 import { Router } from "express";
-import UserModel from "../models/user.model.js";
 import passport from "passport";
 
 const router = Router();
+const PRIVATE_KEY = "codErHoUsExpressCourseIvan4321";
 
 router.get("/error", async (req, res) => {
   res.send("Error al Autenticar con Github");
@@ -11,7 +11,9 @@ router.get("/error", async (req, res) => {
 router.get(
   "/github",
   passport.authenticate("github", { scope: ["user:email"] }),
-  async (req, res) => {}
+  async (req, res) => {
+    return res.cookie("token", req.accessToken).send("Cookie Created");
+  }
 );
 
 router.get(
@@ -30,6 +32,7 @@ router.post(
     if (!req.user) return res.status(400).send("Credenciales Invalidos");
 
     req.session.user = req.user;
+
     return res.redirect("/products");
   }
 );
@@ -38,7 +41,7 @@ router.post(
   "/register",
   passport.authenticate("register", { failureRedirect: "/" }),
   async (req, res) => {
-    return res.redirect("/products");
+    return res.cookie("token", req.accessToken).redirect("/products");
   }
 );
 
@@ -48,6 +51,19 @@ router.get("/logout", (req, res) => {
 
     return res.redirect("/");
   });
+});
+
+router.get("/current", (req, res) => {
+  //Obtenemos de la cookie
+  const token = req.token;
+
+  let decoredToken = {};
+
+  try {
+    decoredToken = jwt.verify(token, PRIVATE_KEY);
+  } catch {}
+
+  return res.json(decoredToken);
 });
 
 export default router;

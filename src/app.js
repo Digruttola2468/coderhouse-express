@@ -13,6 +13,8 @@ import CarritoRouter from "./routers/carrito.routes.js";
 import viewsRouter from "./routers/views.routes.js";
 import sessionRouter from './routers/session.routes.js'; 
 
+import cookieParser from "cookie-parser";
+
 //Inicializamos Express
 const servidor = express();
 const MONGOOSE_URL =
@@ -40,6 +42,9 @@ servidor.use(
     saveUninitialized: true,
   })
 );
+
+//Cookie parser
+servidor.use(cookieParser());
 
 //Establecemos la carpeta /static como publica
 servidor.use("/static", express.static("./src/public"));
