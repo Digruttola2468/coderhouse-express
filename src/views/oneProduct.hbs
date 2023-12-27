@@ -20,8 +20,8 @@
 
    const button = document.querySelector('#button-one');
 
-   const cid = "656fb9eeaa9fe8d76786f2e3";
-
+   const cid = "{{this.cart}}";
+   
    button.addEventListener('click', () => {
       //"{{data._id}}"
       fetch(`/api/${cid}/product/{{data._id}}`, {method: 'POST'}).then(() => {

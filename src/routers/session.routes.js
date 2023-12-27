@@ -2,7 +2,12 @@ import { Router } from "express";
 import passport from "passport";
 
 const router = Router();
-const PRIVATE_KEY = "codErHoUsExpressCourseIvan4321";
+
+function auth(req, res, next) {
+  if (req.session?.user) return next();
+
+  return res.redirect("/login");
+}
 
 router.get("/error", async (req, res) => {
   res.send("Error al Autenticar con Github");
@@ -41,7 +46,7 @@ router.post(
   "/register",
   passport.authenticate("register", { failureRedirect: "/" }),
   async (req, res) => {
-    return res.cookie("token", req.accessToken).redirect("/products");
+    return res.redirect("/products");
   }
 );
 
@@ -53,17 +58,9 @@ router.get("/logout", (req, res) => {
   });
 });
 
-router.get("/current", (req, res) => {
+router.get("/current",auth, (req, res) => {
   //Obtenemos de la cookie
-  const token = req.token;
-
-  let decoredToken = {};
-
-  try {
-    decoredToken = jwt.verify(token, PRIVATE_KEY);
-  } catch {}
-
-  return res.json(decoredToken);
+  return res.json(req.session.user);
 });
 
 export default router;

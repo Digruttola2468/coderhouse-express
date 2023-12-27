@@ -78,11 +78,13 @@ ruta.get("/products",auth, async (req, res) => {
 ruta.get("/product/:pid",auth, async (req, res) => {
   try {
     const { pid } = req.params;
+    const user = req.session.user;
 
     const productOne = await productsModel.findOne({ _id: pid }).lean();
 
     res.render("oneProduct", {
       data: productOne,
+      cart: user.cart
     });
   } catch (error) {
     console.error(error);

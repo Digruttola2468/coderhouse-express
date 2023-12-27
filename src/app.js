@@ -42,6 +42,8 @@ servidor.use(
     saveUninitialized: true,
   })
 );
+servidor.use(passport.initialize());
+servidor.use(passport.session());
 
 //Cookie parser
 servidor.use(cookieParser());
@@ -50,8 +52,6 @@ servidor.use(cookieParser());
 servidor.use("/static", express.static("./src/public"));
 
 inicializePassword();
-servidor.use(passport.initialize());
-servidor.use(passport.session());
 
 //Agregamos las rutas middleware
 servidor.use('/api/session', sessionRouter);

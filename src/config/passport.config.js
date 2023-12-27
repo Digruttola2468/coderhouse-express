@@ -4,13 +4,13 @@ import UserModel from "../models/user.model.js";
 import {
   createHash,
   isValidPassword,
-  authToken,
-  generateToken,
 } from "../utils.js";
 import GitHubStrategy from "passport-github2";
 import cardsModel from "../models/cards.model.js";
+import passportJwt from "passport-jwt";
 
 const LocalStrategy = local.Strategy;
+const PassportJWT = passportJwt.Strategy;
 
 const inicializePassword = () => {
   passport.use(
@@ -19,7 +19,7 @@ const inicializePassword = () => {
       {
         clientID: "458dd2c8a17338952980",
         clientSecret: "1fbee1d442e07a85aa9f8e3fcc1352c50a9bff71",
-        callbackURL: "http://localhost:8080/api/session/githubcallback"
+        callbackURL: "http://localhost:8080/api/session/githubcallback",
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
@@ -35,12 +35,10 @@ const inicializePassword = () => {
             age: null,
             password: "",
             role: "user",
-            cart: result._id
+            cart: result._id,
           });
 
-          const accessToken = generateToken(newUser);
-          
-          return done(null, accessToken);
+          return done(null, newUser);
         } catch (error) {
           return done("Error to login with github");
         }
@@ -78,11 +76,9 @@ const inicializePassword = () => {
             if (email == "adminCoder@coder.com" && password == "adminCod3r123")
               role = "admin";
 
-            await UserModel.create({ ...newUser, role });
-            
-            const accessToken = generateToken(newUser);
-            req.token = accessToken;
-            return done(null, accessToken);
+            const user = await UserModel.create({ ...newUser, role });
+
+            return done(null, user);
           } catch (error) {
             console.error(error);
             res
@@ -122,15 +118,6 @@ const inicializePassword = () => {
     new LocalStrategy(
       { passReqToCallback: true },
       (req, username, password, done) => {
-        //Obtenemos de la cookie
-        const token = req.token;
-
-        let decoredToken = {};
-
-        try {
-          decoredToken = jwt.verify(token, JWT_SECRET);
-        } catch {}
-        return done(null, decoredToken);
       }
     )
   );
