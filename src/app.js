@@ -15,11 +15,10 @@ import sessionRouter from './routers/session.routes.js';
 
 import cookieParser from "cookie-parser";
 
+import config from './config/config.js'
+
 //Inicializamos Express
 const servidor = express();
-const MONGOOSE_URL =
-  "mongodb+srv://ivansandigruttola:Me53RuCg9hI35FjA@cursoprueba.lauxayp.mongodb.net/";
-const MONGO_DB = "coderExpress"
 
 //
 servidor.use(express.json());
@@ -63,7 +62,7 @@ servidor.use("/api", CarritoRouter);
 //Conectamos a mongoDB
 let httpServer = null;
 mongoose
-  .connect(MONGOOSE_URL, { dbName: "coderExpress" })
+  .connect(config.mongoURL, { dbName: config.mongoDBName })
   .then(() => {
     //Iniciamos el servidor
     httpServer = servidor.listen(8080, () => {

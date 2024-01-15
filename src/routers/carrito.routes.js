@@ -1,14 +1,11 @@
 import { Router } from "express";
-import CartsManager from "../CarritoManager.js";
-import ProductManager from "../ProductManager.js";
 
-import productsModel from "../models/products.model.js";
-import cardModel from "../models/cards.model.js";
+import cardModel from "../DAO/mongo/models/cards.model.js";
+import productsModel from "../DAO/mongo/models/products.model.js";
+
+import { carritoService,productsService } from "../repository/index.js";
 
 const ruta = Router();
-
-//const carts = new CartsManager("./src/carrito.json");
-//const products = new ProductManager('./src/productos.json')
 
 ruta.get("/carts/:cid", async (req, res) => {
   const cid = req.params.cid;
@@ -65,7 +62,6 @@ ruta.post("/:cid/product/:pid", async (req, res) => {
           return res.send({ message: "success" });
         }
 
-        console.log({ product: pid, quantity: quantity });
         cardOne.products.push({ product: pid, quantity: quantity });
 
         await cardModel.updateOne({ _id: cid }, cardOne);
