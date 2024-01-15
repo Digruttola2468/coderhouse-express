@@ -1,11 +1,7 @@
 import { Router } from "express";
-import productModel from "../DAO/mongo/models/products.model.js";
-
 import { productsService } from "../repository/index.js";
 
 const ruta = Router();
-
-//const product = new ProductManager("./src/productos.json");
 
 ruta.get("/products", async (req, res) => {
   try {
@@ -14,13 +10,7 @@ ruta.get("/products", async (req, res) => {
     const limit = parseInt(req.query?.limit ?? 10);
     const page = parseInt(req.query?.page ?? 1);
 
-    const products = await productModel.paginate(
-      {},
-      {
-        limit,
-        page,
-      }
-    );
+    const products = await productsService.getPaginateProducts(page,limit);
 
     const prevLink =
       products.prevPage != null
@@ -45,21 +35,14 @@ ruta.get("/products", async (req, res) => {
     };
 
     if (query) {
-      //buscar por todos los que tenga una sierta categoria o nombre
+      //buscar por todos los que tenga una cierta categoria o nombre
     }
     if (sort) {
       let order = 0;
       if (sort.toLowerCase() === "asc") order = 1;
       if (sort.toLowerCase() === "desc") order = -1;
 
-      if (order == 1 || order == -1) {
-        const result = await productModel.aggregate([
-          { $sort: { price: order } },
-          { $limit: limit },
-        ]);
-
-        enviar.payload = result;
-      }
+      if (order == 1 || order == -1) enviar.payload = await productsService.getProductsOrderPrice(order, limit);
     }
 
     res.send(enviar);
@@ -73,7 +56,7 @@ ruta.get("/product/:pid", async (req, res) => {
   try {
     const { pid } = req.params;
 
-    const productOne = await productModel.findOne({ _id: pid });
+    const productOne = await productsService.getOne(pid)
 
     res.send(productOne);
   } catch (error) {
@@ -110,7 +93,7 @@ ruta.post("/products", async (req, res) => {
   };
 
   try {
-    await productModel.create(object);
+    await productsService.createProducts(object)
 
     res.json({ message: "success" });
   } catch (error) {
@@ -124,7 +107,7 @@ ruta.put("/products/:pid", async (req, res) => {
   const pid = req.params.pid;
 
   try {
-    await productModel.updateOne({ _id: pid }, body);
+    await productsService.updateProducts(pid, body);
     return res.json({ message: "update success" });
   } catch (error) {
     return res.status(404).json({ message: "not found" });
@@ -132,10 +115,10 @@ ruta.put("/products/:pid", async (req, res) => {
 });
 
 ruta.delete("/products/:pid", async (req, res) => {
-  const id = req.params.pid;
+  const pid = req.params.pid;
 
   try {
-    await productModel.deleteOne({ _id: id });
+    await productsService.deleteOne(pid)
     return res.json({ message: "delete success" });
   } catch (error) {
     return res.status(404).json({ message: "not found" });

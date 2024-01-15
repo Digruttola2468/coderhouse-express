@@ -6,7 +6,7 @@ import {
   isValidPassword,
 } from "../utils.js";
 import GitHubStrategy from "passport-github2";
-import cardsModel from "../models/cards.model.js";
+import cardsModel from "../DAO/mongo/models/cards.model.js";
 import passportJwt from "passport-jwt";
 
 const LocalStrategy = local.Strategy;

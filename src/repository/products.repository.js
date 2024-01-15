@@ -9,8 +9,28 @@ export default class ProductsRepository {
         return await this.dao.get();
     }
 
+    getOne = async (id) => {
+        return await this.dao.getOne(id);
+    }
+
+    getPaginateProducts = async (page, limit, lean) => {
+        return await this.dao.getPaginate(page, limit, lean);
+    }
+
+    getProductsOrderPrice = async (order,limit) => {
+        return await this.dao.getOrderPrice(order,limit)
+    }
+
     createProducts = async (product) => {
         const productsToInsert = new ProductInsertDao(product);
         return await this.dao.insert(productsToInsert);
+    }
+
+    updateProducts = async (id, obj) => {
+        return await this.dao.update(id, obj);
+    }
+
+    deleteOne = async (id) => {
+        return await this.dao.delete(id)
     }
 }

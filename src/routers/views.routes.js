@@ -1,10 +1,8 @@
 import { Router } from "express";
-import ProductManager from "../ProductManager.js";
-import { Server } from "socket.io";
-import httpServer from "../app.js";
+import { productsService } from "../repository/index.js";
 
-import productsModel from "../models/products.model.js";
-import cardsModel from "../models/cards.model.js";
+//import productsModel from "../DAO/mongo/products.mongo.js";
+//import cardsModel from "../DAO/mongo/carrito.mongo.js";
 
 const ruta = Router();
 
@@ -21,7 +19,7 @@ function auth(req, res, next) {
   return res.redirect("/login");
 }
 
-ruta.get("/realtimeproducts",auth, async (req, res) => {
+/*ruta.get("/realtimeproducts",auth, async (req, res) => {
   const socketServer = new Server(httpServer);
 
   const product = new ProductManager("./src/productos.json");
@@ -40,7 +38,7 @@ ruta.get("/realtimeproducts",auth, async (req, res) => {
     listProducts,
     title: "List Products RealTime",
   });
-});
+});*/
 
 ruta.get("/products",auth, async (req, res) => {
   const limit = parseInt(req.query?.limit ?? 10);
@@ -48,14 +46,7 @@ ruta.get("/products",auth, async (req, res) => {
 
   const user = req.session.user;
 
-  const products = await productsModel.paginate(
-    {},
-    {
-      limit,
-      page,
-      lean: true,
-    }
-  );
+  const products = await productsService.getPaginateProducts(page,limit,true)
 
   const prevLink =
     products.prevPage != null
@@ -80,7 +71,7 @@ ruta.get("/product/:pid",auth, async (req, res) => {
     const { pid } = req.params;
     const user = req.session.user;
 
-    const productOne = await productsModel.findOne({ _id: pid }).lean();
+    const productOne = await productsService.getOne(pid).lean();
 
     res.render("oneProduct", {
       data: productOne,
