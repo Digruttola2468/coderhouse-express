@@ -6,7 +6,8 @@ import {
   isValidPassword,
 } from "../utils.js";
 import GitHubStrategy from "passport-github2";
-import cardsModel from "../DAO/mongo/models/cards.model.js";
+import { carritoService } from "../repository/index.js";
+
 import passportJwt from "passport-jwt";
 
 const LocalStrategy = local.Strategy;
@@ -26,7 +27,8 @@ const inicializePassword = () => {
           const user = await UserModel.findOne({ email: profile._json.email });
           if (user) return done(null, user);
 
-          const result = await cardsModel.create({ products: [] });
+          //const result = await cardsModel.create({ products: [] });
+          const result = await carritoService.createCarrito({ products: [] });
 
           const newUser = await UserModel.create({
             first_name: profile._json.name,
@@ -61,7 +63,8 @@ const inicializePassword = () => {
 
           //Creamos el carrito
           try {
-            const result = await cardsModel.create({ products: [] });
+            //const result = await cardsModel.create({ products: [] });
+            const result = await carritoService.createCarrito({ products: [] });
 
             const newUser = {
               first_name,

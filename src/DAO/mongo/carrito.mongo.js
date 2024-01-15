@@ -7,8 +7,9 @@ export default class Carrito {
         return await carritoModel.find();
     }
 
-    getOne = async (id) => {
-        return await carritoModel.findById(id).populate("products.product");
+    getOne = async (id, lean = false) => {
+        if (lean) return await carritoModel.findById(id).populate("products.product").lean();
+        else return await carritoModel.findById(id).populate("products.product");
     }
 
     insert = async (data) => {
@@ -16,7 +17,7 @@ export default class Carrito {
     }
 
     update = async (id, data) => {
-        await cardModel.updateOne({ _id: id }, data);
+        await carritoModel.updateOne({ _id: id }, data);
     }
 
     delete = async (id) => {

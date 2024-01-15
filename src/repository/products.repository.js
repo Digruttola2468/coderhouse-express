@@ -9,8 +9,8 @@ export default class ProductsRepository {
         return await this.dao.get();
     }
 
-    getOne = async (id) => {
-        return await this.dao.getOne(id);
+    getOne = async (id,lean) => {
+        return await this.dao.getOne(id,lean);
     }
 
     getPaginateProducts = async (page, limit, lean) => {

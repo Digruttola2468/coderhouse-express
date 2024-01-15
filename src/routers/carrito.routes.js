@@ -31,7 +31,7 @@ ruta.post("/:cid/product/:pid", async (req, res) => {
   let quantity = parseInt(req.query?.quantity ?? 1);
 
   try {
-    const cardOne = await carritoService.getOneCarrito(id);
+    const cardOne = await carritoService.getOneCarrito(cid);
 
     //Verificamos si existe el carrito
     if (cardOne) {

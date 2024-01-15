@@ -68,7 +68,7 @@ ruta.get("/product/:pid",auth, async (req, res) => {
     const { pid } = req.params;
     const user = req.session.user;
 
-    const productOne = await productsService.getOne(pid).lean();
+    const productOne = await productsService.getOne(pid, true);
 
     res.render("oneProduct", {
       data: productOne,
@@ -83,7 +83,7 @@ ruta.get("/product/:pid",auth, async (req, res) => {
 ruta.get("/carts/:cid",auth, async (req, res) => {
   const cid = req.params.cid;
   try {
-    const carrito = await carritoService.getOneCarrito(cid).lean();
+    const carrito = await carritoService.getOneCarrito(cid,true);
     res.render("cards", {
       data: carrito,
     });

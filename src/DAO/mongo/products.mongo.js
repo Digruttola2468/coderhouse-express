@@ -7,8 +7,9 @@ export default class Products {
     return await productModel.find();
   };
 
-  getOne = async (id) => {
-    return await productModel.findOne({ _id: id });
+  getOne = async (id, lean = false) => {
+    if (lean) return await productModel.findOne({ _id: id }).lean();
+    else return await productModel.findOne({ _id: id });
   };
 
   getPaginate = async (page, limit, lean = false) => {
@@ -17,7 +18,7 @@ export default class Products {
       {
         limit,
         page,
-        lean
+        lean,
       }
     );
   };
@@ -27,7 +28,7 @@ export default class Products {
       { $sort: { price: order } },
       { $limit: limit },
     ]);
-  }
+  };
 
   insert = async (data) => {
     return await productModel.create(data);
