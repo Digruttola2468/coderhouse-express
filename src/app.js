@@ -9,7 +9,6 @@ import inicializePassword from "./config/passport.config.js";
 
 import ProductsRouter from "./routers/products.routes.js";
 import CarritoRouter from "./routers/carrito.routes.js";
-
 import viewsRouter from "./routers/views.routes.js";
 import sessionRouter from './routers/session.routes.js'; 
 
@@ -33,8 +32,8 @@ servidor.set("view engine", "hbs");
 servidor.use(
   session({
     store: MongoStore.create({
-      mongoUrl: MONGOOSE_URL,
-      dbName: MONGO_DB,
+      mongoUrl: config.mongoURL,
+      dbName: config.mongoDBName,
     }),
     secret: "secret",
     resave: true,

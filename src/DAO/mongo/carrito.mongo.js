@@ -15,6 +15,10 @@ export default class Carrito {
         return await carritoModel.create(data);
     }
 
+    update = async (id, data) => {
+        await cardModel.updateOne({ _id: id }, data);
+    }
+
     delete = async (id) => {
         const cardOne = await carritoModel.findOne({ _id: id });
 

@@ -1,8 +1,5 @@
 import { Router } from "express";
-import { productsService } from "../repository/index.js";
-
-//import productsModel from "../DAO/mongo/products.mongo.js";
-//import cardsModel from "../DAO/mongo/carrito.mongo.js";
+import { carritoService, productsService } from "../repository/index.js";
 
 const ruta = Router();
 
@@ -86,10 +83,7 @@ ruta.get("/product/:pid",auth, async (req, res) => {
 ruta.get("/carts/:cid",auth, async (req, res) => {
   const cid = req.params.cid;
   try {
-    const carrito = await cardsModel
-      .findById(cid)
-      .populate("products.product")
-      .lean();
+    const carrito = await carritoService.getOneCarrito(cid).lean();
     res.render("cards", {
       data: carrito,
     });

@@ -1,16 +1,13 @@
 import { Router } from "express";
 
-import cardModel from "../DAO/mongo/models/cards.model.js";
-import productsModel from "../DAO/mongo/models/products.model.js";
-
-import { carritoService,productsService } from "../repository/index.js";
+import { carritoService, productsService } from "../repository/index.js";
 
 const ruta = Router();
 
 ruta.get("/carts/:cid", async (req, res) => {
   const cid = req.params.cid;
   try {
-    const carrito = await cardModel.findById(cid).populate("products.product");
+    const carrito = await carritoService.getOneCarrito(cid);
     res.send(carrito);
   } catch (error) {
     console.error(error);
@@ -20,7 +17,7 @@ ruta.get("/carts/:cid", async (req, res) => {
 
 ruta.post("/carts", async (req, res) => {
   try {
-    const result = await cardModel.create({ products: [] });
+    const result = await carritoService.createCarrito({ products: [] });
     res.json({ id: result._id, products: result.products, message: "success" });
   } catch (error) {
     console.error(error);
@@ -34,37 +31,37 @@ ruta.post("/:cid/product/:pid", async (req, res) => {
   let quantity = parseInt(req.query?.quantity ?? 1);
 
   try {
-    const cardOne = await cardModel.findOne({ _id: cid });
+    const cardOne = await carritoService.getOneCarrito(id);
 
     //Verificamos si existe el carrito
     if (cardOne) {
       //Verificamos si existe ese producto
-      const productOne = await productsModel.findOne({ _id: pid });
+      const productOne = await productsService.getOne(pid);
       if (productOne) {
-        
-        const findSameProductSameCarrito = cardOne.products.find(elem => elem.product == productOne._id.toString());
-        
+        const findSameProductSameCarrito = cardOne.products.find(
+          (elem) => elem.product == productOne._id.toString()
+        );
 
         // Si existe el mismo producto en el mismo carrito
         if (findSameProductSameCarrito) {
           quantity += findSameProductSameCarrito.quantity;
 
-          const listCarritoProducts = cardOne.products.map(elem => {
-            if (elem.product == productOne._id.toString()) 
-              return {...elem, quantity};
+          const listCarritoProducts = cardOne.products.map((elem) => {
+            if (elem.product == productOne._id.toString())
+              return { ...elem, quantity };
             else return elem;
           });
 
           cardOne.products = listCarritoProducts;
 
-          await cardModel.updateOne({ _id: cid }, cardOne);
+          await carritoService.updateCarrito(cid, cardOne);
 
           return res.send({ message: "success" });
         }
 
         cardOne.products.push({ product: pid, quantity: quantity });
 
-        await cardModel.updateOne({ _id: cid }, cardOne);
+        await carritoService.updateCarrito(cid, cardOne);
 
         return res.send({ message: "success" });
       } else return res.status(404).json({ message: "Not Found" });
@@ -84,22 +81,23 @@ ruta.delete("/carts/:cid/products/:pid", async (req, res) => {
   const pid = req.params.pid;
 
   try {
-    const cardOne = await cardModel.findOne({ _id: cid });
+    const cardOne = await carritoService.getOneCarrito(cid);
 
     //Verificamos si existe el carrito
     if (cardOne) {
       //Verificamos si existe ese producto
-      const productOne = await productsModel.findOne({ _id: pid });
+      const productOne = await productsService.getOne(pid);
       if (productOne) {
         //Eliminar el carrito el producto seleccionado
 
         const filter = cardOne.products.filter((elem) => elem._id != pid);
-        await cardModel.updateOne(
+        /*await cardModel.updateOne(
           { _id: cid },
           {
             products: filter,
           }
-        );
+        );*/
+        await carritoService.updateCarrito(cid, { products: filter });
 
         res.send({ message: "success" });
       } else return res.status(404).json({ message: "Not Found" });
@@ -114,13 +112,13 @@ ruta.delete("/carts/:cid", async (req, res) => {
   const cid = req.params.cid;
 
   try {
-    const cardOne = await cardModel.findOne({ _id: cid });
+    const cardOne = await carritoService.getOneCarrito(cid);
 
     //Verificamos si existe el carrito
     if (cardOne) {
       cardOne.products = [];
 
-      await cardModel.updateOne({ _id: cid }, cardOne);
+      await carritoService.updateCarrito(cid, cardOne);
 
       res.send({ message: "success" });
     }
