@@ -7,7 +7,7 @@ export default class Carrito {
         return this.db;
     }
 
-    getOne = async () => {
+    getOne = async (id) => {
         return this.db.find(elem => elem.id == id)
     }
 
