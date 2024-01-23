@@ -55,8 +55,8 @@ inicializePassword();
 servidor.use('/api/session', sessionRouter);
 
 servidor.use(viewsRouter);
-servidor.use("/api", ProductsRouter);
-servidor.use("/api", CarritoRouter);
+servidor.use("/api/products", ProductsRouter);
+servidor.use("/api/carts", CarritoRouter);
 
 //Conectamos a mongoDB
 let httpServer = null;

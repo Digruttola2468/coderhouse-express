@@ -1,9 +1,10 @@
 import { Router } from "express";
-import { productsService } from "../repository/index.js";
+import { productsService } from "../services/index.js";
+import {authAdmin} from './session.routes.js'
 
 const ruta = Router();
 
-ruta.get("/products", async (req, res) => {
+ruta.get("/", async (req, res) => {
   try {
     const { query, sort } = req.query;
 
@@ -52,7 +53,7 @@ ruta.get("/products", async (req, res) => {
   }
 });
 
-ruta.get("/product/:pid", async (req, res) => {
+ruta.get("/:pid", async (req, res) => {
   try {
     const { pid } = req.params;
 
@@ -65,7 +66,7 @@ ruta.get("/product/:pid", async (req, res) => {
   }
 });
 
-ruta.post("/products", async (req, res) => {
+ruta.post("/",authAdmin, async (req, res) => {
   const {
     title,
     description,
@@ -102,7 +103,7 @@ ruta.post("/products", async (req, res) => {
   }
 });
 
-ruta.put("/products/:pid", async (req, res) => {
+ruta.put("/:pid",authAdmin, async (req, res) => {
   const body = req.body;
   const pid = req.params.pid;
 
@@ -114,7 +115,7 @@ ruta.put("/products/:pid", async (req, res) => {
   }
 });
 
-ruta.delete("/products/:pid", async (req, res) => {
+ruta.delete("/:pid",authAdmin, async (req, res) => {
   const pid = req.params.pid;
 
   try {

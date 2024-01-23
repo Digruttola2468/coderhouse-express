@@ -1,4 +1,4 @@
-import ProductInsertDao from "../DTO/products.dto.js";
+import ProductInsertDto from "../DTO/products.dto.js";
 
 export default class ProductsRepository {
     constructor (dao) {
@@ -22,7 +22,7 @@ export default class ProductsRepository {
     }
 
     createProducts = async (product) => {
-        const productsToInsert = new ProductInsertDao(product);
+        const productsToInsert = new ProductInsertDto(product);
         return await this.dao.insert(productsToInsert);
     }
 

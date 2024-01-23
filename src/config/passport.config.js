@@ -6,7 +6,7 @@ import {
   isValidPassword,
 } from "../utils.js";
 import GitHubStrategy from "passport-github2";
-import { carritoService } from "../repository/index.js";
+import { carritoService } from "../services/index.js";
 
 import passportJwt from "passport-jwt";
 

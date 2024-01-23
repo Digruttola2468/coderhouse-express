@@ -1,11 +1,12 @@
-<div style="width: 100%;display: grid;grid-template-columns: repeat(auto-fit,minmax(340px,1fr));gap: 10px;">
+<div style="width: 100%;display: grid;grid-template-columns: repeat(auto-fit,minmax(340px,1fr));gap: 10px;margin-top: 20px;">
 
    <div style="position:relative; border: gray 1px solid; width: 320px;border-radius: 10px;padding: 8px;">
      <h1 style="text-align: center;text-transform: uppercase;"> {{data.title}} </h1>
      <p> <b>Descripcion</b>: {{data.description}} </p>
-     <div style="display: flex; flex-direction: row;justify-content: space-between;">
+     <div style="display: flex; flex-direction: row;justify-content: space-between;align-items: center;">
         <p> <b> USD${{data.price}} </b> </p>
-        <p> <b> Cantidad:{{data.stock}} </b> </p>
+        <input type="number" max={{data.stock}} id="input" placeholder="Cantidad" style="width: 100px;height: 26px;" min="1">
+        <p> <b> Stock:{{data.stock}} </b> </p>
      </div>
       <div style="position: absolute;top: 5px; right: 5px">
         <button id="button-one" style="background-color: rgb(159, 247, 247); border:none; cursor: pointer; padding: 5px;border-radius: 5px;" >Add to card</button>
@@ -19,18 +20,19 @@
 <script>
 
    const button = document.querySelector('#button-one');
-
+   const quantity = document.getElementById('input');
    const cid = "{{this.cart}}";
-   
+
    button.addEventListener('click', () => {
-      //"{{data._id}}"
-      fetch(`/api/${cid}/product/{{data._id}}`, {method: 'POST'}).then(() => {
-         alert('Ya esta agregado al carrito');
-         window.location.href = "/products";
-      }).catch(e => {
-         alert('No se agrego al carrito');
-         console.log(e);
-         })
+   //"{{data._id}}"
+   fetch(`/api/carts/${cid}/product/{{data._id}}?quantity=${quantity.value}`, {method: 'POST'}).then(() => {
+      alert('Ya esta agregado al carrito');
+      window.location.href = "/products";
+   }).catch(e => {
+      alert('No se agrego al carrito');
+      console.log(e);
+      })
    })
+   
 
 </script>

@@ -8,8 +8,28 @@
         <h2 style="text-align: center;text-transform: uppercase;">{{this.product.title}} </h2>
         <p> <b>Descripcion</b>: {{this.product.description}} </p>
         <div style="display: flex; flex-direction: row;justify-content: space-between;">
-            <p> <b> Cantidad:{{this.quantity}} </b> </p>
+            <p> <b> Cantidad del Pedido:{{this.quantity}} </b> </p>
+            <p> <b> Stock del Proveedor:{{this.product.stock}} </b> </p>
+        </div>
+        <div style="display: flex; flex-direction: row;justify-content: space-between;">
+            <p> <b> Precio x Unidad:{{this.product.price}}USD </b> </p>
         </div>
     </div>
     {{/each}}
 </div>
+<button id="button-pay" style="margin-top: 20px;">Comprar</button>
+
+<script>
+    const button = document.querySelector('#button-pay');
+
+    button.addEventListener('click', () => {
+        const cid = "{{data._id}}";
+
+        fetch(`/api/carts/${cid}/purchase`, {method: 'POST'}).then(() => {
+            alert('Se Compro con exito');
+        }).catch(e => {
+            alert('No se agrego al carrito');
+            console.log(e);
+        })
+   });
+</script>

@@ -1,12 +1,29 @@
 import { Router } from "express";
 import passport from "passport";
+import UserInfoDTO from "../DTO/usuario.dto.js";
 
 const router = Router();
 
-function auth(req, res, next) {
+export function auth(req, res, next) {
   if (req.session?.user) return next();
 
   return res.redirect("/login");
+}
+
+export function authAdmin(req, res, next) {
+  const user = req.session?.user;
+  if (user) {
+    if (user.role.toLowerCase() == "admin") next();
+    else return res.status(405).json({ message: "Not Allowed" });
+  } else return res.redirect("/login");
+}
+
+export function authUser(req, res, next) {
+  const user = req.session?.user;
+  if (user) {
+    if (user.role.toLowerCase() == "user") next();
+    else return res.status(405).json({ message: "Not Allowed" });
+  } else return res.redirect("/login");
 }
 
 router.get("/error", async (req, res) => {
@@ -58,9 +75,8 @@ router.get("/logout", (req, res) => {
   });
 });
 
-router.get("/current",auth, (req, res) => {
-  //Obtenemos de la cookie
-  return res.json(req.session.user);
+router.get("/current", auth, (req, res) => {
+  return res.json(new UserInfoDTO(req.session.user));
 });
 
 export default router;

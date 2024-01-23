@@ -14,3 +14,16 @@ export const createHash = (password) => {
 export const isValidPassword = (user, password) => {
   return bcrypt.compareSync(password, user.password);
 };
+
+export const generateRandomString = () => {
+  let result = "";
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const charactersLength = characters.length;
+  let i = 0;
+  while (i < 10) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    i += 1;
+  }
+  return result;
+};
