@@ -15,6 +15,7 @@ import sessionRouter from './routers/session.routes.js';
 import cookieParser from "cookie-parser";
 
 import config from './config/config.js'
+import errors from "./middlewares/errors.js";
 
 //Inicializamos Express
 const servidor = express();
@@ -57,6 +58,8 @@ servidor.use('/api/session', sessionRouter);
 servidor.use(viewsRouter);
 servidor.use("/api/products", ProductsRouter);
 servidor.use("/api/carts", CarritoRouter);
+
+servidor.use(errors);
 
 //Conectamos a mongoDB
 let httpServer = null;
