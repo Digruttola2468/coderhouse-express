@@ -15,8 +15,8 @@ ruta.get("/:cid", async (req, res) => {
     const carrito = await carritoService.getOneCarrito(cid);
     res.send(carrito);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "error: no se logro leer" });
+    req.logger.error("No existe ese carrito");
+    res.status(404).json({ message: "error: No existe ese carrito" });
   }
 });
 
@@ -25,8 +25,8 @@ ruta.post("/", async (req, res) => {
     const result = await carritoService.createCarrito({ products: [] });
     res.json({ id: result._id, products: result.products, message: "success" });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "error: no se logro leer el archivo" });
+    req.logger.fatal("No se creo el carrito");
+    res.status(500).json({ message: "Something Wrong" });
   }
 });
 
@@ -40,52 +40,68 @@ ruta.post("/:cid/product/:pid", authUser, async (req, res) => {
   try {
     const cardOne = await carritoService.getOneCarrito(cid);
 
-    //Verificamos si existe el carrito
-    if (cardOne) {
-      //Verificamos si existe ese producto
+    try {
       const productOne = await productsService.getOne(pid);
-      if (productOne) {
-        const findSameProductSameCarrito = cardOne.products.find(
-          (elem) => elem.product._id == productOne._id.toString()
-        );
 
-        // Si existe el mismo producto en el mismo carrito
-        if (findSameProductSameCarrito) {
-          quantity += findSameProductSameCarrito.quantity;
+      const findSameProductSameCarrito = cardOne.products.find(
+        (elem) => elem.product._id == productOne._id.toString()
+      );
 
-          if (quantity > productOne.stock)
-            return res.status(400).json({
-              message: "La cantidad supera al stock actual del producto",
-            });
+      // Si existe el mismo producto en el mismo carrito
+      if (findSameProductSameCarrito) {
+        quantity += findSameProductSameCarrito.quantity;
 
-          const listCarritoProducts = cardOne.products.map((elem) => {
-            if (elem.product._id == productOne._id.toString())
-              return { ...elem, quantity };
-            else return elem;
-          });
-
-          cardOne.products = listCarritoProducts;
-
-          await carritoService.updateCarrito(cid, cardOne);
-
-          return res.send({ message: "success" });
-        }
-
-        if (quantity > productOne.stock)
+        if (quantity > productOne.stock) {
+          req.logger.error("Cantidad enviada supera al stock del producto");
           return res.status(400).json({
             message: "La cantidad supera al stock actual del producto",
           });
+        }
 
-        cardOne.products.push({ product: pid, quantity: quantity });
+        const listCarritoProducts = cardOne.products.map((elem) => {
+          if (elem.product._id == productOne._id.toString())
+            return { ...elem, quantity };
+          else return elem;
+        });
 
-        await carritoService.updateCarrito(cid, cardOne);
+        cardOne.products = listCarritoProducts;
+
+        try {
+          await carritoService.updateCarrito(cid, cardOne);
+        } catch (error) {
+          req.logger.fatal("No se actualizo el carrito");
+          return res
+            .status(400)
+            .json({ message: "No se actualizo el carrito" });
+        }
 
         return res.send({ message: "success" });
-      } else return res.status(404).json({ message: "Not Found" });
+      }
+
+      if (quantity > productOne.stock) {
+        req.logger.error("Cantidad enviada supera al stock del producto");
+        return res.status(400).json({
+          message: "La cantidad supera al stock actual del producto",
+        });
+      }
+
+      cardOne.products.push({ product: pid, quantity: quantity });
+
+      try {
+        await carritoService.updateCarrito(cid, cardOne);
+      } catch (error) {
+        req.logger.fatal("No se actualizo el carrito");
+        return res.status(400).json({ message: "No se actualizo el carrito" });
+      }
+
+      return res.send({ message: "success" });
+    } catch (error) {
+      req.logger.error("No existe ese producto");
+      return res.status(404).json({ message: "Not Found product" });
     }
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Ocurrio un error en el servidor" });
+    req.logger.error("No existe ese carrito");
+    return res.status(404).json({ message: "No existe ese carrito" });
   }
 });
 
@@ -100,28 +116,30 @@ ruta.delete("/:cid/products/:pid", authUser, async (req, res) => {
   try {
     const cardOne = await carritoService.getOneCarrito(cid);
 
-    //Verificamos si existe el carrito
-    if (cardOne) {
-      //Verificamos si existe ese producto
+    try {
       const productOne = await productsService.getOne(pid);
       if (productOne) {
         //Eliminar el carrito el producto seleccionado
-
         const filter = cardOne.products.filter((elem) => elem._id != pid);
-        /*await cardModel.updateOne(
-          { _id: cid },
-          {
-            products: filter,
-          }
-        );*/
-        await carritoService.updateCarrito(cid, { products: filter });
 
-        res.send({ message: "success" });
+        try {
+          await carritoService.updateCarrito(cid, { products: filter });
+        } catch (error) {
+          req.logger.fatal("No se actualizo el carrito");
+          return res
+            .status(500)
+            .json({ message: "No se actualizo el carrito" });
+        }
+
+        return res.send({ message: "success" });
       } else return res.status(404).json({ message: "Not Found" });
+    } catch (error) {
+      req.logger.error("No existe ese producto");
+      return res.status(404).json({ message: "No existe ese producto" });
     }
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Ocurrio un error en el servidor" });
+    req.logger.error("No existe ese carrito");
+    return res.status(404).json({ message: "No existe ese carrito" });
   }
 });
 
@@ -131,17 +149,19 @@ ruta.delete("/:cid", async (req, res) => {
   try {
     const cardOne = await carritoService.getOneCarrito(cid);
 
-    //Verificamos si existe el carrito
-    if (cardOne) {
-      cardOne.products = [];
+    cardOne.products = [];
 
+    try {
       await carritoService.updateCarrito(cid, cardOne);
-
-      res.send({ message: "success" });
+    } catch (error) {
+      req.logger.fatal("No se actualizo el carrito");
+      return res.status(500).json({ message: "No se actualizo el carrito" });
     }
+
+    return res.send({ message: "success" });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Ocurrio un error en el servidor" });
+    req.logger.error("No existe ese carrito");
+    return res.status(404).json({ message: "No existe ese carrito" });
   }
 });
 
@@ -172,17 +192,25 @@ ruta.post("/:cid/purchase", authUser, async (req, res) => {
 
               total += element.quantity * element.product.price;
             } catch (error) {
+              req.logger.fatal("No se actualizo el stock del producto");
               return res.status(500).json({
-                message: "Ocurrio un error al modificar el stock del producto",
+                message: "No se actualizo el stock del producto",
               });
             }
           }
 
           //Luego generar el ticket
-          await ticketService.generateTicket({
-            amount: total,
-            purchaser: user.email,
-          });
+          try {
+            await ticketService.generateTicket({
+              amount: total,
+              purchaser: user.email,
+            });
+          } catch (error) {
+            req.logger.fatal("No se genero el ticket del usuario");
+            return res.status(500).json({
+              message: "No se genero el ticket",
+            });
+          }
         }
         //Filtramos los productos que no tienen stock suficiente a la cantidad solicitada
         const filterCardsToUser = products.filter(
@@ -201,17 +229,24 @@ ruta.post("/:cid/purchase", authUser, async (req, res) => {
         try {
           await carritoService.updateCarrito(idCarrito, { products: map });
         } catch (error) {
+          req.logger.fatal("No se modifico el carrito del usuario");
           return res.status(500).json({
             message: "Ocurrio un error al modificar el carrito del usuario",
           });
         }
 
-        return res.json({ message: "Operacion Exitosa" })
-      } else return res.status(400).json({ message: "Carrito Vacio" });
-    } else return res.status(404).json({ message: "Cart Not Found" });
+        return res.json({ message: "Operacion Exitosa" });
+      } else {
+        req.logger.error("Carrito esta vacio");
+        return res.status(400).json({ message: "Carrito Vacio" });
+      }
+    } else {
+      req.logger.error("No existe ese carrito");
+      return res.status(404).json({ message: "Cart Not Found" });
+    }
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({ message: "Something Wrong" });
+    req.logger.error("No existe ese carrito");
+    return res.status(404).json({ message: "No existe ese carrito" });
   }
 });
 

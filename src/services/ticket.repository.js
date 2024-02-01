@@ -10,12 +10,6 @@ export default class TicketRepository {
 
     const randomCod = generateRandomString();
 
-    console.log({
-      ...data,
-      purchase_datetime: dateActual,
-      code: randomCod,
-    });
-
     return await this.dao.insert({
       ...data,
       purchase_datetime: dateActual,

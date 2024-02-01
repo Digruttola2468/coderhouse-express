@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { productsService } from "../services/index.js";
-import {authAdmin} from './session.routes.js'
+import { authAdmin } from "./session.routes.js";
 
 const ruta = Router();
 
@@ -11,7 +11,7 @@ ruta.get("/", async (req, res) => {
     const limit = parseInt(req.query?.limit ?? 10);
     const page = parseInt(req.query?.page ?? 1);
 
-    const products = await productsService.getPaginateProducts(page,limit);
+    const products = await productsService.getPaginateProducts(page, limit);
 
     const prevLink =
       products.prevPage != null
@@ -43,12 +43,16 @@ ruta.get("/", async (req, res) => {
       if (sort.toLowerCase() === "asc") order = 1;
       if (sort.toLowerCase() === "desc") order = -1;
 
-      if (order == 1 || order == -1) enviar.payload = await productsService.getProductsOrderPrice(order, limit);
+      if (order == 1 || order == -1)
+        enviar.payload = await productsService.getProductsOrderPrice(
+          order,
+          limit
+        );
     }
 
-    res.send(enviar);
+    return res.send(enviar);
   } catch (error) {
-    console.log(error);
+    req.logger.fatal("No se obtuvio los datos de manera de paginacion");
     res.status(500).send({ status: "error", message: "Something Wrong" });
   }
 });
@@ -57,16 +61,16 @@ ruta.get("/:pid", async (req, res) => {
   try {
     const { pid } = req.params;
 
-    const productOne = await productsService.getOne(pid)
+    const productOne = await productsService.getOne(pid);
 
-    res.send(productOne);
+    return res.send(productOne);
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Ocurrio un error en el servidor" });
+    req.logger.error("No existe el producto");
+    return res.status(404).json({ message: "No existe el producto" });
   }
 });
 
-ruta.post("/",authAdmin, async (req, res) => {
+ruta.post("/", authAdmin, async (req, res) => {
   const {
     title,
     description,
@@ -94,16 +98,16 @@ ruta.post("/",authAdmin, async (req, res) => {
   };
 
   try {
-    await productsService.createProducts(object)
+    await productsService.createProducts(object);
 
-    res.json({ message: "success" });
+    return res.json({ message: "success" });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "error: no se logro leer el archivo" });
+    req.logger.error("No se creo el producto");
+    res.status(400).json({ message: "Campos Invalidos" });
   }
 });
 
-ruta.put("/:pid",authAdmin, async (req, res) => {
+ruta.put("/:pid", authAdmin, async (req, res) => {
   const body = req.body;
   const pid = req.params.pid;
 
@@ -111,18 +115,20 @@ ruta.put("/:pid",authAdmin, async (req, res) => {
     await productsService.updateProducts(pid, body);
     return res.json({ message: "update success" });
   } catch (error) {
+    req.logger.error("No se actualizo el producto");
     return res.status(404).json({ message: "not found" });
   }
 });
 
-ruta.delete("/:pid",authAdmin, async (req, res) => {
+ruta.delete("/:pid", authAdmin, async (req, res) => {
   const pid = req.params.pid;
 
   try {
-    await productsService.deleteOne(pid)
+    await productsService.deleteOne(pid);
     return res.json({ message: "delete success" });
   } catch (error) {
-    return res.status(404).json({ message: "not found" });
+    req.logger.error("No existe el producto");
+    return res.status(404).json({ message: "Not Found Product" });
   }
 });
 

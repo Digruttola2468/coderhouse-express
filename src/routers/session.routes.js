@@ -14,7 +14,10 @@ export function authAdmin(req, res, next) {
   const user = req.session?.user;
   if (user) {
     if (user.role.toLowerCase() == "admin") next();
-    else return res.status(405).json({ message: "Not Allowed" });
+    else {
+      req.logger.error("No tenes permisos para acceder");
+      return res.status(405).json({ message: "Not Allowed" });
+    }
   } else return res.redirect("/login");
 }
 
@@ -22,7 +25,10 @@ export function authUser(req, res, next) {
   const user = req.session?.user;
   if (user) {
     if (user.role.toLowerCase() == "user") next();
-    else return res.status(405).json({ message: "Not Allowed" });
+    else {
+      req.logger.error("No tenes permisos para acceder");
+      return res.status(405).json({ message: "Not Allowed" });
+    }
   } else return res.redirect("/login");
 }
 

@@ -37,59 +37,70 @@ function auth(req, res, next) {
   });
 });*/
 
-ruta.get("/products",auth, async (req, res) => {
+ruta.get("/products", auth, async (req, res) => {
   const limit = parseInt(req.query?.limit ?? 10);
   const page = parseInt(req.query?.page ?? 1);
 
   const user = req.session.user;
 
-  const products = await productsService.getPaginateProducts(page,limit,true)
-
-  const prevLink =
-    products.prevPage != null
-      ? `/products/?page=${products.prevPage}&limit=${products.limit}`
-      : null;
-  const nextLink =
-    products.nextPage != null
-      ? `/products/?page=${products.nextPage}&limit=${products.limit}`
-      : null;
-
-  products.prevLink = prevLink;
-  products.nextLink = nextLink;
-
-  res.render("products", {
-    data: products,
-    user
-  });
-});
-
-ruta.get("/product/:pid",auth, async (req, res) => {
   try {
-    const { pid } = req.params;
-    const user = req.session.user;
+    const products = await productsService.getPaginateProducts(
+      page,
+      limit,
+      true
+    );
 
-    const productOne = await productsService.getOne(pid, true);
+    const prevLink =
+      products.prevPage != null
+        ? `/products/?page=${products.prevPage}&limit=${products.limit}`
+        : null;
+    const nextLink =
+      products.nextPage != null
+        ? `/products/?page=${products.nextPage}&limit=${products.limit}`
+        : null;
 
-    res.render("oneProduct", {
-      data: productOne,
-      cart: user.cart
+    products.prevLink = prevLink;
+    products.nextLink = nextLink;
+
+    return res.render("products", {
+      data: products,
+      user,
     });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Ocurrio un error en el servidor" });
+    req.logger.fatal("No se obtuvio los datos con forma de paginacion");
+    return res
+      .status(500)
+      .send({ status: "error", message: "Something Wrong" });
   }
 });
 
-ruta.get("/carts/:cid",auth, async (req, res) => {
+ruta.get("/product/:pid", auth, async (req, res) => {
+  const { pid } = req.params;
+  const user = req.session.user;
+
+  try {
+    const productOne = await productsService.getOne(pid, true);
+
+    return res.render("oneProduct", {
+      data: productOne,
+      cart: user.cart,
+    });
+  } catch (error) {
+    req.logger.error("No existe el producto");
+    return res.status(404).json({ message: "No existe el producto" });
+  }
+});
+
+ruta.get("/carts/:cid", auth, async (req, res) => {
   const cid = req.params.cid;
   try {
-    const carrito = await carritoService.getOneCarrito(cid,true);
-    res.render("cards", {
+    const carrito = await carritoService.getOneCarrito(cid, true);
+    return res.render("cards", {
       data: carrito,
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "error: no se logro leer" });
+    req.logger.error("No existe el carrito");
+    res.status(404).json({ message: "error: No existe el carrito" });
   }
 });
 
