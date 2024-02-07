@@ -2,31 +2,30 @@ import winston from "winston";
 
 const customLevelOptions = {
   levels: {
-    debug: 1,
-    http: 2,
+    debug: 4,
+    http: 5,
     info: 3,
-    warning: 4,
-    error: 5,
-    fatal: 6,
+    warning: 2,
+    error: 1,
+    fatal: 0,
   },
 };
 
 const devLogger = winston.createLogger({
-  format: winston.format.simple(),
   levels: customLevelOptions.levels,
   transports: [
     new winston.transports.Console({
       level: "debug",
+      format: winston.format.simple(),
     }),
   ],
 });
 
 const prodLogger = winston.createLogger({
   levels: customLevelOptions.levels,
-  format: winston.format.simple(),
   transports: [
     new winston.transports.File({
-      filename: "../log/errors.log",
+      filename: "./src/log/errors.log",
       level: "info",
     }),
   ],

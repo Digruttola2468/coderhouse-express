@@ -56,7 +56,6 @@ servidor.use("/static", express.static("./src/public"));
 
 inicializePassword();
 
-servidor.use(middlewareDevLogger);
 
 //Agregamos las rutas middleware
 servidor.use("/api/session", sessionRouter);
@@ -67,6 +66,7 @@ servidor.use("/api/carts", CarritoRouter);
 
 servidor.use(errors);
 
+servidor.use(middlewareProdLogger);
 servidor.get("/loggerTest", (req, res) => {
   req.logger.debug("DEBUG");
   req.logger.http("HTTP");
