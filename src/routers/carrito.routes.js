@@ -34,6 +34,7 @@ ruta.post("/:cid/product/:pid", authUser, async (req, res) => {
   const cid = req.params.cid;
   const pid = req.params.pid;
   let quantity = parseInt(req.query.quantity);
+  const user = req.session?.user;
 
   if (!Number.isInteger(quantity)) quantity = 1;
 
@@ -42,6 +43,15 @@ ruta.post("/:cid/product/:pid", authUser, async (req, res) => {
 
     try {
       const productOne = await productsService.getOne(pid);
+
+      if (productOne.owner == user.email)
+        return res
+          .status(401)
+          .json({
+            status: "error",
+            message:
+              "No estas Habilitado a agregar al carrito un producto propio",
+          });
 
       const findSameProductSameCarrito = cardOne.products.find(
         (elem) => elem.product._id == productOne._id.toString()

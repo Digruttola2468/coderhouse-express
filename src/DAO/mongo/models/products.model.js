@@ -12,7 +12,11 @@ const productSchema = mongoose.Schema({
     },
     stock: Number,
     categoria: String,
-    disponible: Boolean
+    disponible: Boolean,
+    owner: {
+        type: String,
+        default: 'admin'
+    }
 });
 
 productSchema.plugin(mongoosePaginate);

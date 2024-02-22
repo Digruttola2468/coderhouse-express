@@ -1,0 +1,35 @@
+<form id="form-newProduct" style="display: flex; flex-direction: column; gap: 8px; align-items: center; justify-content: center;">
+    <h1>Crear Nuevo Producto</h1>
+    <input style="padding: 8px; " type="text" placeholder="Title" id="input-newProduct-title">
+    <input style="padding: 8px; " type="text" placeholder="Descripcion" id="input-newProduct-descripcion">
+    <input style="padding: 8px; " type="number" placeholder="Price" id="input-newProduct-price">
+    <input style="padding: 8px; " type="number" placeholder="Stock" id="input-newProduct-stock">
+    <input style="padding: 8px; " type="text" placeholder="Code" id="input-newProduct-code" >
+    <button style="padding: 8px" type="submit">Agregar Producto</button>
+</form>
+
+<script>
+
+   const form = document.querySelector("#form-newProduct");
+
+   form.addEventListener('submit', (evt) =>{
+      evt.preventDefault();
+
+      const title = evt.target["input-newProduct-title"].value;
+      const description = evt.target["input-newProduct-descripcion"].value;
+      const price = evt.target["input-newProduct-price"].value;
+      const stock = evt.target["input-newProduct-stock"].value;
+      const code = evt.target["input-newProduct-code"].value;
+
+      fetch(`/api/products`, {method: 'POST', body: JSON.stringify({ title: title, description: description, code: code, price: price, stock: stock }),headers: {
+      "Content-Type": "application/json",
+    }, }).then(() => {
+      alert('Ya se creo el producto');
+      //window.location.href = "/products";
+   }).catch(e => {
+      alert('No se creo el producto');
+      console.log(e);
+      })
+   })
+
+</script>

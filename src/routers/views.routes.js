@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { carritoService, productsService } from "../services/index.js";
+import { authAdmin } from "./session.routes.js";
 
 const ruta = Router();
 
@@ -43,6 +44,10 @@ ruta.get("/products", auth, async (req, res) => {
 
   const user = req.session.user;
 
+  let isNewProducto = false;
+  if (user.role.toLowerCase() == 'premium' || user.role.toLowerCase() == 'admin') isNewProducto = true;
+  
+
   try {
     const products = await productsService.getPaginateProducts(
       page,
@@ -65,6 +70,7 @@ ruta.get("/products", auth, async (req, res) => {
     return res.render("products", {
       data: products,
       user,
+      isNewProducto
     });
   } catch (error) {
     req.logger.fatal("No se obtuvio los datos con forma de paginacion");
@@ -103,6 +109,15 @@ ruta.get("/carts/:cid", auth, async (req, res) => {
     res.status(404).json({ message: "error: No existe el carrito" });
   }
 });
+
+ruta.get('/newProduct', authAdmin, (req,res) => {
+  return res.render('newProduct')
+})
+
+ruta.get('/changePassword', auth, (req,res) => {
+  return res.render('recoverPassword')
+})
+
 
 //                Views Session
 

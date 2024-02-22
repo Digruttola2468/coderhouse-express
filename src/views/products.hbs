@@ -1,6 +1,13 @@
 <a href="/carts/{{user.cart}}">Ver mi Carrito</a>
 <div>
-    <h1>Bienvendio {{user.first_name}}</h1>
+    <h1>Bienvendio {{user.first_name}}
+        <span>
+            <button id="buttonChangeRole">Cambiar de Role</button>
+        </span>
+        <span>
+            <button id="buttonChangePassword">Cambiar Contraseña</button>
+        </span>
+    </h1>
     <div>
         <p>Nombre: {{user.first_name}}</p>
         <p>Apellido: {{user.last_name}}</p>
@@ -8,6 +15,9 @@
         <p>Email: {{user.email}}</p>
         <p>Role: {{user.role}}</p>
     </div>
+    {{#if isNewProducto}}
+        <a href="/newProduct">Agregar un producto Propio !!</a>
+    {{/if}}
 </div>
 <br>
 <div style="width: 100%;display: grid;grid-template-columns: repeat(auto-fit,minmax(340px,1fr));gap: 10px;">
@@ -31,3 +41,23 @@
         <a href={{data.nextLink}}>Next</a>
     {{/if}}
 </div>
+
+<script>
+
+    const buttonChangePassword = document.querySelector("#buttonChangePassword");
+    const button = document.querySelector("#buttonChangeRole");
+
+    button.addEventListener('click', () => {
+        fetch(`/api/users/premium/{{user._id}}`, {method: 'PUT'}).then(() => {
+      alert('Se actualizo el role');
+      window.location.href = "/products";
+        }).catch(e => {
+      alert('No se actualizo');
+      console.log(e);
+      })
+    })
+
+    buttonChangePassword.addEventListener('click', () => {
+        location.href = '/api/session/sendRecoverPassword'
+    })
+</script>

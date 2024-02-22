@@ -1,36 +1,46 @@
 import ProductInsertDto from "../DTO/products.dto.js";
 
 export default class ProductsRepository {
-    constructor (dao) {
-        this.dao = dao;
-    }
+  constructor(productDAO) {
+    this.productDAO = productDAO;
+  }
 
-    getProducts = async () => {
-        return await this.dao.get();
-    }
+  getProducts = async () => {
+    return await this.productDAO.get();
+  };
 
-    getOne = async (id,lean) => {
-        return await this.dao.getOne(id,lean);
-    }
+  getOne = async (id, lean = false) => {
+    return await this.productDAO.getOne(id, lean);
+  };
 
-    getPaginateProducts = async (page, limit, lean) => {
-        return await this.dao.getPaginate(page, limit, lean);
-    }
+  getPaginateProducts = async (page, limit, lean) => {
+    return await this.productDAO.getPaginate(page, limit, lean);
+  };
 
-    getProductsOrderPrice = async (order,limit) => {
-        return await this.dao.getOrderPrice(order,limit)
-    }
+  getProductsOrderPrice = async (order, limit) => {
+    return await this.productDAO.getOrderPrice(order, limit);
+  };
 
-    createProducts = async (product) => {
-        const productsToInsert = new ProductInsertDto(product);
-        return await this.dao.insert(productsToInsert);
-    }
+  createProducts = async (product) => {
+    return await this.productDAO.insert(product);
+  };
 
-    updateProducts = async (id, obj) => {
-        return await this.dao.update(id, obj);
-    }
+  updateProducts = async (id, obj, user) => {
+    if (user.role.toLowerCase() == "premium") {
+      const product = this.getOne(pid);
 
-    deleteOne = async (id) => {
-        return await this.dao.delete(id)
-    }
+      if (product.owner == user.email)
+        return await this.productDAO.update(id, obj);
+      else throw new Error();
+    } else return await this.productDAO.update(id, obj);
+  };
+
+  deleteOne = async (id, user) => {
+    if (user.role.toLowerCase() == "premium") {
+      const product = this.getOne(pid);
+
+      if (product.owner == user.email) return await this.productDAO.delete(id);
+      else throw new Error();
+    } else return await this.productDAO.delete(id);
+  };
 }

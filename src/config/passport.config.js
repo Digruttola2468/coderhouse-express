@@ -1,14 +1,10 @@
 import passport from "passport";
 import local from "passport-local";
-import UserModel from "../models/user.model.js";
-import {
-  createHash,
-  isValidPassword,
-} from "../utils.js";
 import GitHubStrategy from "passport-github2";
-import { carritoService } from "../services/index.js";
-
 import passportJwt from "passport-jwt";
+
+import { createHash, isValidPassword } from "../utils.js";
+import { carritoService, userService } from "../services/index.js";
 
 const LocalStrategy = local.Strategy;
 const PassportJWT = passportJwt.Strategy;
@@ -24,13 +20,15 @@ const inicializePassword = () => {
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
-          const user = await UserModel.findOne({ email: profile._json.email });
+          const user = await userService.findOneUserByGmail(
+            profile._json.email
+          );
           if (user) return done(null, user);
 
           //const result = await cardsModel.create({ products: [] });
           const result = await carritoService.createCarrito({ products: [] });
 
-          const newUser = await UserModel.create({
+          const newUser = await userService.newUser({
             first_name: profile._json.name,
             last_name: "",
             email: profile._json.email,
@@ -58,7 +56,7 @@ const inicializePassword = () => {
       async (req, username, password, done) => {
         const { first_name, last_name, email, age } = req.body;
         try {
-          const user = await UserModel.findOne({ email: username });
+          const user = await userService.findOneUserByGmail(username);
           if (user) return done(null, false);
 
           //Creamos el carrito
@@ -79,7 +77,7 @@ const inicializePassword = () => {
             if (email == "adminCoder@coder.com" && password == "adminCod3r123")
               role = "admin";
 
-            const user = await UserModel.create({ ...newUser, role });
+            const user = await userService.newUser({ ...newUser, role });
 
             return done(null, user);
           } catch (error) {
@@ -101,9 +99,8 @@ const inicializePassword = () => {
       { usernameField: "email" },
       async (username, password, done) => {
         try {
-          const user = await UserModel.findOne({ email: username })
-            .lean()
-            .exec();
+          const user = await userService.findOneUserByGmail(username, true);
+
           if (!user) return done(null, false);
 
           if (!isValidPassword(user, password)) return done(null, false);
@@ -120,8 +117,7 @@ const inicializePassword = () => {
     "current",
     new LocalStrategy(
       { passReqToCallback: true },
-      (req, username, password, done) => {
-      }
+      (req, username, password, done) => {}
     )
   );
 
@@ -129,7 +125,7 @@ const inicializePassword = () => {
     done(null, user._id);
   });
   passport.deserializeUser(async (id, done) => {
-    const user = await UserModel.findById(id);
+    const user = await userService.findOneUserById(id);
     done(null, user);
   });
 };

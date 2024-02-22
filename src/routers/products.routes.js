@@ -71,6 +71,8 @@ ruta.get("/:pid", async (req, res) => {
 });
 
 ruta.post("/", authAdmin, async (req, res) => {
+  const user = req.session?.user;
+
   const {
     title,
     description,
@@ -86,22 +88,24 @@ ruta.post("/", authAdmin, async (req, res) => {
   if (!title || !description || !price || !code || !stock)
     return res.status(400).json({ message: "Completar los campos" });
 
-  const object = {
+  let object = {
     title,
     description,
     code,
     price,
-    stock,
-    categoria,
-    thumbnail,
-    disponible,
+    stock
   };
+
+  if (user.role.toLowerCase() == "premium") object.owner = user.email;
+
+  console.log(object);
 
   try {
     await productsService.createProducts(object);
 
     return res.json({ message: "success" });
   } catch (error) {
+    console.log(error);
     req.logger.error("No se creo el producto");
     res.status(400).json({ message: "Campos Invalidos" });
   }
@@ -110,9 +114,10 @@ ruta.post("/", authAdmin, async (req, res) => {
 ruta.put("/:pid", authAdmin, async (req, res) => {
   const body = req.body;
   const pid = req.params.pid;
+  const user = req.session?.user;
 
   try {
-    await productsService.updateProducts(pid, body);
+    await productsService.updateProducts(pid, body, user);
     return res.json({ message: "update success" });
   } catch (error) {
     req.logger.error("No se actualizo el producto");
@@ -122,9 +127,10 @@ ruta.put("/:pid", authAdmin, async (req, res) => {
 
 ruta.delete("/:pid", authAdmin, async (req, res) => {
   const pid = req.params.pid;
+  const user = req.session?.user;
 
   try {
-    await productsService.deleteOne(pid);
+    await productsService.deleteOne(pid, user);
     return res.json({ message: "delete success" });
   } catch (error) {
     req.logger.error("No existe el producto");
