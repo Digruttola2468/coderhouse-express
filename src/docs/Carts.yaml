@@ -1,0 +1,19 @@
+
+paths:
+  /api/carts/{cid}:
+    get:
+      summary: Obtiene el carrito
+    delete: 
+      summary: Eliminar el carrito
+  /api/carts:
+    post:
+      summary: Agregar Carrito vacio
+  /api/carts/:cid/product/:pid:
+    post:
+      summary: Agregar un producto al carrito
+    delete:
+      summary: Eliminar un producto del carrito
+  /api/carts/:cid/purchase:
+    post:
+      summary: Comprar los productos seleccionado del carrito
+

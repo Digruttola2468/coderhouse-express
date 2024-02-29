@@ -1,0 +1,27 @@
+
+paths:
+  /api/products/{pid}:
+    get:
+      summary: Obtiene un producto
+    delete: 
+      summary: Eliminar Producto
+    update: 
+      summary: Actualizar Producto
+  /api/products:
+    get:  
+      summary: Obtiene todos los productos
+      response:
+        "200":
+          description: Se Obtuvieron los productos Correctamente
+          content:
+            aplication/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#components/schemas/Products'
+        "500":
+          description: Error intento del servidor
+    post:
+      summary: Crear un producto
+
+

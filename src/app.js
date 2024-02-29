@@ -11,9 +11,14 @@ import ProductsRouter from "./routers/products.routes.js";
 import CarritoRouter from "./routers/carrito.routes.js";
 import viewsRouter from "./routers/views.routes.js";
 import sessionRouter from "./routers/session.routes.js";
-import userRouter from './routers/user.routes.js'
+import userRouter from "./routers/user.routes.js";
 
 import cookieParser from "cookie-parser";
+
+import __dirname from "./utils.js";
+
+import swaggerJSDoc from "swagger-jsdoc";
+import SwaggerUiExpress from "swagger-ui-express";
 
 import config from "./config/config.js";
 import errors from "./middlewares/errors.js";
@@ -57,10 +62,25 @@ servidor.use("/static", express.static("./src/public"));
 
 inicializePassword();
 
+const specs = swaggerJSDoc({
+  definition: {
+    info: {
+      title: "Documentacion Del E-Commerce 🛒",
+      description: "",
+    },
+  },
+  apis: [`${__dirname}/docs/**/*.yaml`],
+});
+
+servidor.use(
+  "/api/docs",
+  SwaggerUiExpress.serve,
+  SwaggerUiExpress.setup(specs)
+);
 
 //Agregamos las rutas middleware
 servidor.use("/api/session", sessionRouter);
-servidor.use("/api/users", userRouter)
+servidor.use("/api/users", userRouter);
 
 servidor.use(viewsRouter);
 servidor.use("/api/products", ProductsRouter);

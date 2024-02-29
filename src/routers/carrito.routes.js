@@ -117,9 +117,9 @@ ruta.post("/:cid/product/:pid", authUser, async (req, res) => {
 
 ruta.put("/:cid", async (req, res) => {});
 
-ruta.put("/:cid/products/:pid", async (req, res) => {});
+ruta.put("/:cid/product/:pid", async (req, res) => {});
 
-ruta.delete("/:cid/products/:pid", authUser, async (req, res) => {
+ruta.delete("/:cid/product/:pid", authUser, async (req, res) => {
   const cid = req.params.cid;
   const pid = req.params.pid;
 
