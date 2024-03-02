@@ -17,10 +17,12 @@ export function authAdmin(req, res, next) {
     if (user.role.toLowerCase() == "admin") next();
     else if (user.role.toLowerCase() == "premium") next();
     else {
-      req.logger.error("No tenes permisos para acceder");
-      return res.status(405).json({ message: "Not Allowed" });
+      //req.logger.error("No tenes permisos para acceder");
+      return res.status(405).json({ message: "Not Allowed", status: 'error' });
     }
-  } else return res.redirect("/login");
+  } else {
+    return res.redirect("/login");
+  }
 }
 
 export function authUser(req, res, next) {
@@ -76,7 +78,6 @@ router.get("/sendRecoverPassword", auth, async (req, res) => {
   
     return res.json({status: 'success', message: 'Check your gmail'})
   } catch (error) {
-    console.log(error);
     return res.json({status: 'error', message: 'Error al enviar gmail'})
   }
 });
@@ -130,7 +131,6 @@ router.put(
 
       //Actualizar el usuario con la nueva contraseña
       const updated = await userService.updatePassword(user._id, passwordHash);
-      console.log("ACTUALIZADO , ", updated);
 
       req.session.user = req.user;
 

@@ -27,8 +27,8 @@ export default class ProductsRepository {
 
   updateProducts = async (id, obj, user) => {
     if (user.role.toLowerCase() == "premium") {
-      const product = this.getOne(pid);
-
+      const product = await this.getOne(id);
+      
       if (product.owner == user.email)
         return await this.productDAO.update(id, obj);
       else throw new Error();
@@ -37,7 +37,7 @@ export default class ProductsRepository {
 
   deleteOne = async (id, user) => {
     if (user.role.toLowerCase() == "premium") {
-      const product = this.getOne(pid);
+      const product = await this.getOne(id);
 
       if (product.owner == user.email) return await this.productDAO.delete(id);
       else throw new Error();

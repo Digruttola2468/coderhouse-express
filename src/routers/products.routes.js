@@ -98,14 +98,10 @@ ruta.post("/", authAdmin, async (req, res) => {
 
   if (user.role.toLowerCase() == "premium") object.owner = user.email;
 
-  console.log(object);
-
   try {
-    await productsService.createProducts(object);
-
-    return res.json({ message: "success" });
+    const newProduct = await productsService.createProducts(object);
+    return res.json({ message: "Operacion Exitosa", payload: newProduct, status: 'success' });
   } catch (error) {
-    console.log(error);
     req.logger.error("No se creo el producto");
     res.status(400).json({ message: "Campos Invalidos" });
   }
@@ -118,10 +114,13 @@ ruta.put("/:pid", authAdmin, async (req, res) => {
 
   try {
     await productsService.updateProducts(pid, body, user);
-    return res.json({ message: "update success" });
+
+    const getOne = await productsService.getOne(pid)
+
+    return res.json({ message: "update success", payload: getOne, status: 'success' });
   } catch (error) {
-    req.logger.error("No se actualizo el producto");
-    return res.status(404).json({ message: "not found" });
+    //req.logger.error("No se actualizo el producto");
+    return res.status(404).json({ message: "not found", status: 'error' });
   }
 });
 
@@ -131,10 +130,10 @@ ruta.delete("/:pid", authAdmin, async (req, res) => {
 
   try {
     await productsService.deleteOne(pid, user);
-    return res.json({ message: "delete success" });
+    return res.json({ message: "delete success", status: 'success' });
   } catch (error) {
-    req.logger.error("No existe el producto");
-    return res.status(404).json({ message: "Not Found Product" });
+    //req.logger.error("No existe el producto");
+    return res.status(404).json({ message: "Not Found Product", status: 'error' });
   }
 });
 
