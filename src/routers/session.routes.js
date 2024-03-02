@@ -17,7 +17,7 @@ export function authAdmin(req, res, next) {
     if (user.role.toLowerCase() == "admin") next();
     else if (user.role.toLowerCase() == "premium") next();
     else {
-      //req.logger.error("No tenes permisos para acceder");
+      req.logger.error("No tenes permisos para acceder");
       return res.status(405).json({ message: "Not Allowed", status: 'error' });
     }
   } else {
@@ -29,10 +29,10 @@ export function authUser(req, res, next) {
   const user = req.session?.user;
   if (user) {
     if (user.role.toLowerCase() == "user") next();
-    if (user.role.toLowerCase() == "premium") next();
+    else if (user.role.toLowerCase() == "premium") next();
     else {
       req.logger.error("No tenes permisos para acceder");
-      return res.status(405).json({ message: "Not Allowed" });
+      return res.status(405).json({ message: "Not Allowed", status: 'error' });
     }
   } else return res.redirect("/login");
 }
@@ -158,7 +158,7 @@ router.get("/logout", (req, res) => {
 });
 
 router.get("/current", auth, (req, res) => {
-  return res.json(new UserInfoDTO(req.session.user));
+  return res.json(req.session.user);
 });
 
 export default router;

@@ -62,6 +62,18 @@ servidor.use("/static", express.static("./src/public"));
 
 inicializePassword();
 
+servidor.use(middlewareDevLogger);
+servidor.get("/loggerTest", (req, res) => {
+  req.logger.debug("DEBUG");
+  req.logger.http("HTTP");
+  req.logger.info("INFO");
+  req.logger.warning("WARNING");
+  req.logger.error("ERRORS");
+  req.logger.fatal("FATAL");
+
+  res.send("Loggers Test Send");
+});
+
 const specs = swaggerJSDoc({
   definition: {
     info: {
@@ -87,18 +99,6 @@ servidor.use("/api/products", ProductsRouter);
 servidor.use("/api/carts", CarritoRouter);
 
 servidor.use(errors);
-
-servidor.use(middlewareDevLogger);
-servidor.get("/loggerTest", (req, res) => {
-  req.logger.debug("DEBUG");
-  req.logger.http("HTTP");
-  req.logger.info("INFO");
-  req.logger.warning("WARNING");
-  req.logger.error("ERRORS");
-  req.logger.fatal("FATAL");
-
-  res.send("Loggers Test Send");
-});
 
 //Conectamos a mongoDB
 let httpServer = null;
