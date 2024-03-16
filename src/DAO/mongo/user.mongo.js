@@ -13,8 +13,8 @@ export default class UserMongo {
 
   getOneByEmail = async (email, lean = false) => {
     if (lean) return await userModel.findOne({ email }).lean().exec();
-    else return await userModel.findOne({ email })
-  }
+    else return await userModel.findOne({ email });
+  };
 
   insert = async (data) => {
     return await userModel.create(data);

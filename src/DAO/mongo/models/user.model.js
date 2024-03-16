@@ -7,7 +7,17 @@ const UserModel = mongoose.model('users', new mongoose.Schema({
     age: Number,
     password: String,
     cart: String,
-    role: String
+    role: String,
+    documents: {
+        type: [
+            {
+                name: String,
+                reference: String
+            }
+        ],
+        default: []
+    },
+    last_connection: Date
 }))
 
 export default UserModel;

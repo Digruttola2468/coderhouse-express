@@ -105,6 +105,9 @@ const inicializePassword = () => {
 
           if (!isValidPassword(user, password)) return done(null, false);
 
+          //Update Last Connection
+          await userService.updateLastConnection(user._id);
+
           return done(null, user);
         } catch (error) {
           return done("Error Login: " + error);

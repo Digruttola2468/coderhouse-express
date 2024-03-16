@@ -4,10 +4,10 @@ export default class UsersRepository {
     this.mailModule = mailModule;
   }
 
-  async sendGmailUpdatePassword (userId) {
+  async sendGmailUpdatePassword(userId) {
     const user = await this.dao.getOneById(userId);
 
-    let html = `You want update your password , for update your password <a href="/recoverPassword">Click Here</a>`
+    let html = `You want update your password , for update your password <a href="/recoverPassword">Click Here</a>`;
 
     const result = await this.mailModule.send(user, "Change Password", html);
     return result;
@@ -21,16 +21,20 @@ export default class UsersRepository {
     return await this.dao.getOneById(uid);
   }
 
-  async findOneUserByGmail(email,lean = false) {
+  async findOneUserByGmail(email, lean = false) {
     return await this.dao.getOneByEmail(email, lean);
   }
 
-  async updatePassword (uid,newPassword) {
+  async updatePassword(uid, newPassword) {
     let user = await this.findOneUserById(uid);
 
     user.password = newPassword;
 
     return await this.dao.update(uid, user);
+  }
+
+  async updateLastConnection(id) {
+    return await this.dao.update(id, { last_connection: Date.now() });
   }
 
   async updateRoleUser(uid) {

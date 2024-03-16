@@ -23,4 +23,9 @@ ruta.put("/premium/:uid", async (req, res) => {
   }
 });
 
+//Permita Subir uno o multiples archivos
+ruta.post('/:uid/documents', (req,res) => {
+
+})
+
 export default ruta;

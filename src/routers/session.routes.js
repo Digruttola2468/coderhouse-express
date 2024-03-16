@@ -18,7 +18,7 @@ export function authAdmin(req, res, next) {
     else if (user.role.toLowerCase() == "premium") next();
     else {
       req.logger.error("No tenes permisos para acceder");
-      return res.status(405).json({ message: "Not Allowed", status: 'error' });
+      return res.status(405).json({ message: "Not Allowed", status: "error" });
     }
   } else {
     return res.redirect("/login");
@@ -32,7 +32,7 @@ export function authUser(req, res, next) {
     else if (user.role.toLowerCase() == "premium") next();
     else {
       req.logger.error("No tenes permisos para acceder");
-      return res.status(405).json({ message: "Not Allowed", status: 'error' });
+      return res.status(405).json({ message: "Not Allowed", status: "error" });
     }
   } else return res.redirect("/login");
 }
@@ -75,10 +75,10 @@ router.get("/sendRecoverPassword", auth, async (req, res) => {
 
   try {
     await userService.sendGmailUpdatePassword(req.session.user._id);
-  
-    return res.json({status: 'success', message: 'Check your gmail'})
+
+    return res.json({ status: "success", message: "Check your gmail" });
   } catch (error) {
-    return res.json({status: 'error', message: 'Error al enviar gmail'})
+    return res.json({ status: "error", message: "Error al enviar gmail" });
   }
 });
 
@@ -130,7 +130,7 @@ router.put(
       const passwordHash = createHash(password);
 
       //Actualizar el usuario con la nueva contraseña
-      const updated = await userService.updatePassword(user._id, passwordHash);
+      await userService.updatePassword(user._id, passwordHash);
 
       req.session.user = req.user;
 
@@ -149,7 +149,11 @@ router.post(
   }
 );
 
-router.get("/logout", (req, res) => {
+router.get("/logout", async (req, res) => {
+  try {
+    await userService.updateLastConnection(req.session.user._id);
+  } catch (error) {}
+
   req.session.destroy((err) => {
     if (err) return res.send("Logout Error");
 
