@@ -9,5 +9,5 @@ const mailModule = new Mail();
 
 export const carritoService = new CarritoRepository(new Carrito());
 export const productsService = new ProductsRepository(new Products());
-export const ticketService = new TicketRepository(new Ticket())
+export const ticketService = new TicketRepository(new Ticket(), mailModule)
 export const userService = new UserRepository(new Users(), mailModule)

@@ -198,7 +198,7 @@ ruta.post("/:cid/purchase", authUser, async (req, res) => {
             try {
               await productsService.updateProducts(element.product._id, {
                 stock: stockActualProduct,
-              });
+              }, user);
 
               total += element.quantity * element.product.price;
             } catch (error) {
@@ -211,13 +211,10 @@ ruta.post("/:cid/purchase", authUser, async (req, res) => {
 
           //Luego generar el ticket
           try {
-            const newTicket = await ticketService.generateTicket({
+            await ticketService.generateTicket(user,{
               amount: total,
               purchaser: user.email,
             });
-
-            //Enviar un correo del ticket
-            
           } catch (error) {
             req.logger.fatal("No se genero el ticket del usuario");
             return res.status(500).json({
