@@ -21,11 +21,7 @@ export default class Mail {
             html
         }
 
-        console.log({opt});
-
         const result = await this.transport.sendMail(opt);
-
-        console.log(result);
 
         return result
     }

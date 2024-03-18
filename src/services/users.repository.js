@@ -7,7 +7,7 @@ export default class UsersRepository {
   async sendGmailUpdatePassword(userId) {
     const user = await this.dao.getOneById(userId);
 
-    let html = `You want update your password , for update your password <a href="/recoverPassword">Click Here</a>`;
+    let html = `You want update your password , for update your password <a href="http://localhost:8080/updatePassword">Click Here</a>`;
 
     const result = await this.mailModule.send(user, "Change Password", html);
     return result;
@@ -26,11 +26,7 @@ export default class UsersRepository {
   }
 
   async updatePassword(uid, newPassword) {
-    let user = await this.findOneUserById(uid);
-
-    user.password = newPassword;
-
-    return await this.dao.update(uid, user);
+    return await this.dao.update(uid, {password: newPassword});
   }
 
   async updateLastConnection(id) {

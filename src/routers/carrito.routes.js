@@ -211,10 +211,13 @@ ruta.post("/:cid/purchase", authUser, async (req, res) => {
 
           //Luego generar el ticket
           try {
-            await ticketService.generateTicket({
+            const newTicket = await ticketService.generateTicket({
               amount: total,
               purchaser: user.email,
             });
+
+            //Enviar un correo del ticket
+            
           } catch (error) {
             req.logger.fatal("No se genero el ticket del usuario");
             return res.status(500).json({

@@ -2,6 +2,7 @@ import { Router } from "express";
 import passport from "passport";
 import UserInfoDTO from "../DTO/usuario.dto.js";
 import { userService } from "../services/index.js";
+import { createHash, isValidPassword } from "../utils.js";
 
 const router = Router();
 
@@ -78,6 +79,7 @@ router.get("/sendRecoverPassword", auth, async (req, res) => {
 
     return res.json({ status: "success", message: "Check your gmail" });
   } catch (error) {
+    console.log(error);
     return res.json({ status: "error", message: "Error al enviar gmail" });
   }
 });
@@ -89,50 +91,59 @@ router.put(
       const dateSendGmail = new Date(req.session.user.updatePassword);
       const dateNow = new Date();
 
-      //Obtener la hora y dia
+      //Obtener el Dia
       const daySendGmail = dateSendGmail.getDay();
       const dayNow = dateSendGmail.getDay();
 
+      //Obtener la Hora
       const horaSendGmail = dateSendGmail.getHours();
       const horaActual = dateNow.getHours();
 
-      //Comprar los dias y que el mismo
-
-      //Comprar las horas para que este dentro de las 1hr
-
-      next();
-    } else
-      return res.status(400).json({
-        status: "error",
-        message: "Error al intentar actualizar el usuario",
-      });
+      //Comprar los dias para que sea el mismo dia
+      if (daySendGmail === dayNow) {
+        if (horaActual === horaSendGmail) {
+          return next();
+        }
+      }
+    }
+    return res.render("/products", {});
   },
-  async (req, res, next) => {
+  async (req, res) => {
+    const { password } = req.body;
+
     try {
       const user = await userService.findOneUserByGmail(
         req.session.user.email,
         true
       );
 
-      //Si no existe el usuario devolver un false
-      if (!user) return done(null, false);
+      //Si no existe el usuario
+      if (!user) return res.render("/login", {});
 
       //Si la contraseña es igual q al del usuario
       if (isValidPassword(user, password))
-        return done(
-          {
-            status: "error",
-            message: "No se puede colocar la misma contraseña",
-          },
-          null
-        );
+        return res.status(400).json({
+          status: "error",
+          message: "No se puede colocar la misma contraseña",
+        });
 
       const passwordHash = createHash(password);
 
-      //Actualizar el usuario con la nueva contraseña
-      await userService.updatePassword(user._id, passwordHash);
+      try {
+        //Actualizar el usuario con la nueva contraseña
+        await userService.updatePassword(user._id, passwordHash);
 
-      req.session.user = req.user;
+        const userUpdate = await userService.findOneUserById(
+          req.session.user._id
+        );
+
+        req.session.user = userUpdate;
+      } catch (error) {
+        console.log("OCURRIO UN ERROR AL ACTUALIZAR", error);
+        return res
+          .status(500)
+          .json({ status: "error", message: "No se actualizo la contraseña" });
+      }
 
       return res.redirect("/products");
     } catch (error) {

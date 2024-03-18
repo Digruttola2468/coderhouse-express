@@ -45,8 +45,11 @@ ruta.get("/products", auth, async (req, res) => {
   const user = req.session.user;
 
   let isNewProducto = false;
-  if (user.role.toLowerCase() == 'premium' || user.role.toLowerCase() == 'admin') isNewProducto = true;
-  
+  if (
+    user.role.toLowerCase() == "premium" ||
+    user.role.toLowerCase() == "admin"
+  )
+    isNewProducto = true;
 
   try {
     const products = await productsService.getPaginateProducts(
@@ -70,7 +73,7 @@ ruta.get("/products", auth, async (req, res) => {
     return res.render("products", {
       data: products,
       user,
-      isNewProducto
+      isNewProducto,
     });
   } catch (error) {
     req.logger.fatal("No se obtuvio los datos con forma de paginacion");
@@ -110,14 +113,13 @@ ruta.get("/carts/:cid", auth, async (req, res) => {
   }
 });
 
-ruta.get('/newProduct', authAdmin, (req,res) => {
-  return res.render('newProduct')
-})
+ruta.get("/newProduct", authAdmin, (req, res) => {
+  return res.render("newProduct");
+});
 
-ruta.get('/changePassword', auth, (req,res) => {
-  return res.render('recoverPassword')
-})
-
+ruta.get("/changePassword", auth, (req, res) => {
+  return res.render("recoverPassword");
+});
 
 //                Views Session
 
@@ -132,6 +134,12 @@ ruta.get("/login", justPublicWitoutSession, (req, res) => {
 
 ruta.get("/register", justPublicWitoutSession, (req, res) => {
   return res.render("register", {});
+});
+
+ruta.get("/updatePassword", auth, (req, res) => {
+  if (req.session.user.updatePassword == null)
+    return res.render("index", {});
+  else return res.render("recoverPassword", {});
 });
 
 export default ruta;
