@@ -104,10 +104,8 @@ ruta.get("/carts/:cid", auth, async (req, res) => {
   const cid = req.params.cid;
   try {
     const carrito = await carritoService.getOneCarrito(cid, false);
-    console.log(carrito);
     return res.render("cards", {
-      data: carrito,
-      list: carrito.products
+      data: carrito
     });
   } catch (error) {
     req.logger.error("No existe el carrito");

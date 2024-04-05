@@ -123,7 +123,7 @@ const inicializePassword = () => {
           //Update Last Connection
           await userService.updateLastConnection(user._id);
 
-          const token = jwt.sign(user, JWT_SECRET);
+          const token = jwt.sign(user, config.JWT_SECRET);
 
           return done(null, { ...user, token });
         } catch (error) {

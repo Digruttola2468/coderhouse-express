@@ -117,7 +117,44 @@ ruta.post("/:cid/product/:pid", authUser, async (req, res) => {
 
 ruta.put("/:cid", async (req, res) => {});
 
-ruta.put("/:cid/product/:pid", async (req, res) => {});
+ruta.put("/:cid/product/:pid", authUser, async (req, res) => {
+  const cid = req.params.cid;
+  const pid = req.params.pid;
+  const { quantity } = req.body;
+
+  try {
+    const cardOne = await carritoService.getOneCarrito(cid);
+
+    //Validar si existe esa cantidad actualizada en el stock del producto
+    for (let i = 0; i < cardOne.products.length; i++) {
+      const element = cardOne.products[i];
+      if (element.product._id == pid) {
+        if (!(element.product.stock >= quantity)) {
+          return res.status(400).json({
+            status: "error",
+            message: "No hay suficiente stock en el producto",
+          });
+        }
+      }
+    }
+
+    // Actualizamos el quantity del carrito
+    const mapCard = cardOne.products.map((elem) => {
+      if (elem.product._id == pid)
+        return { product: elem.product._id, quantity: quantity, _id: elem._id };
+      else return elem;
+    });
+
+    await carritoService.updateCarrito(cid, { products: mapCard });
+
+    return res.json({
+      status: "success",
+      message: "Update Success",
+    });
+  } catch (error) {
+    return res.json({ status: "error", message: "Ocurio un error" });
+  }
+});
 
 ruta.delete("/:cid/product/:pid", authUser, async (req, res) => {
   const cid = req.params.cid;
@@ -130,7 +167,9 @@ ruta.delete("/:cid/product/:pid", authUser, async (req, res) => {
       const productOne = await productsService.getOne(pid);
       if (productOne) {
         //Eliminar el carrito el producto seleccionado
-        const filter = cardOne.products.filter((elem) => elem.product._id != pid);
+        const filter = cardOne.products.filter(
+          (elem) => elem.product._id != pid
+        );
 
         try {
           await carritoService.updateCarrito(cid, { products: filter });
@@ -141,7 +180,7 @@ ruta.delete("/:cid/product/:pid", authUser, async (req, res) => {
             .json({ message: "No se actualizo el carrito" });
         }
 
-        return res.render("index", {});
+        return res.send({ status: "success", message: "Eliminado Con exito" });
       } else return res.status(404).json({ message: "Not Found" });
     } catch (error) {
       req.logger.error("No existe ese producto");
@@ -196,9 +235,13 @@ ruta.post("/:cid/purchase", authUser, async (req, res) => {
             const stockActualProduct = element.product.stock - element.quantity;
 
             try {
-              await productsService.updateProducts(element.product._id, {
-                stock: stockActualProduct,
-              }, user);
+              await productsService.updateProducts(
+                element.product._id,
+                {
+                  stock: stockActualProduct,
+                },
+                user
+              );
 
               total += element.quantity * element.product.price;
             } catch (error) {
@@ -211,7 +254,7 @@ ruta.post("/:cid/purchase", authUser, async (req, res) => {
 
           //Luego generar el ticket
           try {
-            await ticketService.generateTicket(user,{
+            await ticketService.generateTicket(user, {
               amount: total,
               purchaser: user.email,
             });
