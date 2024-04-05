@@ -21,9 +21,7 @@ export function authAdmin(req, res, next) {
       req.logger.error("No tenes permisos para acceder");
       return res.status(405).json({ message: "Not Allowed", status: "error" });
     }
-  } else {
-    return res.redirect("/login");
-  }
+  } else return res.redirect("/login");
 }
 
 export function authUser(req, res, next) {
@@ -39,7 +37,7 @@ export function authUser(req, res, next) {
 }
 
 router.get("/error", async (req, res) => {
-  res.send("Error al Autenticar con Github");
+  return res.send("Error al Autenticar con Github");
 });
 
 router.get(
@@ -79,7 +77,6 @@ router.get("/sendRecoverPassword", auth, async (req, res) => {
 
     return res.json({ status: "success", message: "Check your gmail" });
   } catch (error) {
-    console.log(error);
     return res.json({ status: "error", message: "Error al enviar gmail" });
   }
 });
@@ -139,7 +136,6 @@ router.put(
 
         req.session.user = userUpdate;
       } catch (error) {
-        console.log("OCURRIO UN ERROR AL ACTUALIZAR", error);
         return res
           .status(500)
           .json({ status: "error", message: "No se actualizo la contraseña" });
@@ -147,7 +143,9 @@ router.put(
 
       return res.redirect("/products");
     } catch (error) {
-      return res.status(400).send("Credenciales Invalidos");
+      return res
+        .status(400)
+        .json({ status: "error", message: "Credenciales Invalidos" });
     }
   }
 );
@@ -166,7 +164,8 @@ router.get("/logout", async (req, res) => {
   } catch (error) {}
 
   req.session.destroy((err) => {
-    if (err) return res.send("Logout Error");
+    if (err)
+      return res.status(500).json({ status: "error", message: "Logout Error" });
 
     return res.redirect("/");
   });

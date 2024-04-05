@@ -141,7 +141,7 @@ ruta.delete("/:cid/product/:pid", authUser, async (req, res) => {
             .json({ message: "No se actualizo el carrito" });
         }
 
-        return res.send({ message: "success" });
+        return res.render("index", {});
       } else return res.status(404).json({ message: "Not Found" });
     } catch (error) {
       req.logger.error("No existe ese producto");

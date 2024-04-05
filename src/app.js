@@ -4,33 +4,38 @@ import MongoStore from "connect-mongo";
 import mongoose from "mongoose";
 import handlebars from "express-handlebars";
 import passport from "passport";
+import __dirname from "./utils.js";
 
+// --- PASSPORT ---
 import inicializePassword from "./config/passport.config.js";
 
+// --- Routers ---
 import ProductsRouter from "./routers/products.routes.js";
 import CarritoRouter from "./routers/carrito.routes.js";
 import viewsRouter from "./routers/views.routes.js";
 import sessionRouter from "./routers/session.routes.js";
 import userRouter from "./routers/user.routes.js";
 
-import cookieParser from "cookie-parser";
-
-import __dirname from "./utils.js";
-
-import swaggerJSDoc from "swagger-jsdoc";
-import SwaggerUiExpress from "swagger-ui-express";
-
-import config from "./config/config.js";
-import errors from "./middlewares/errors.js";
+// --- LOGGER ---
 import {
   middlewareDevLogger,
   middlewareProdLogger,
 } from "./middlewares/logger.js";
 
+// --- SWAGGER ---
+import swaggerJSDoc from "swagger-jsdoc";
+import SwaggerUiExpress from "swagger-ui-express";
+
+// --- DOTENV ---
+import config from "./config/config.js";
+
+// --- HandleErrors ---
+import errors from "./middlewares/errors.js";
+
 //Inicializamos Express
 const servidor = express();
 
-//
+//Establecer uso de JSON
 servidor.use(express.json());
 servidor.use(express.urlencoded({ extended: true }));
 
@@ -54,14 +59,13 @@ servidor.use(
 servidor.use(passport.initialize());
 servidor.use(passport.session());
 
-//Cookie parser
-servidor.use(cookieParser());
-
 //Establecemos la carpeta /static como publica
 servidor.use("/static", express.static("./src/public"));
 
+// PASSPORT
 inicializePassword();
 
+// LOGGER
 servidor.use(middlewareDevLogger);
 servidor.get("/loggerTest", (req, res) => {
   req.logger.debug("DEBUG");
@@ -84,6 +88,7 @@ const specs = swaggerJSDoc({
   apis: [`${__dirname}/docs/**/*.yaml`],
 });
 
+// Configuramos la documentacion de nuestra aplicacion
 servidor.use(
   "/api/docs",
   SwaggerUiExpress.serve,
@@ -93,24 +98,17 @@ servidor.use(
 //Agregamos las rutas middleware
 servidor.use("/api/session", sessionRouter);
 servidor.use("/api/users", userRouter);
-
-servidor.use(viewsRouter);
 servidor.use("/api/products", ProductsRouter);
 servidor.use("/api/carts", CarritoRouter);
+servidor.use(viewsRouter);
 
 servidor.use(errors);
 
 //Conectamos a mongoDB
-let httpServer = null;
 mongoose
   .connect(config.mongoURL, { dbName: config.mongoDBName })
   .then(() => {
     //Iniciamos el servidor
-    httpServer = servidor.listen(8080, () => {
-      console.log("DB Connected 😎");
-      console.log(`Listening PORT localhost:${8080}`);
-    });
+    servidor.listen(8080, () => {});
   })
   .catch((e) => {});
-
-export default httpServer;

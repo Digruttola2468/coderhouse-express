@@ -2,30 +2,40 @@ import passport from "passport";
 import local from "passport-local";
 import GitHubStrategy from "passport-github2";
 import passportJwt from "passport-jwt";
+import jwt from "jsonwebtoken";
 
 import { createHash, isValidPassword } from "../utils.js";
 import { carritoService, userService } from "../services/index.js";
+import config from "./config.js";
 
 const LocalStrategy = local.Strategy;
 const PassportJWT = passportJwt.Strategy;
+const ExtractJWT = passportJwt.ExtractJwt;
 
 const inicializePassword = () => {
   passport.use(
     "github",
     new GitHubStrategy(
       {
-        clientID: "458dd2c8a17338952980",
-        clientSecret: "1fbee1d442e07a85aa9f8e3fcc1352c50a9bff71",
-        callbackURL: "http://localhost:8080/api/session/githubcallback",
+        clientID: config.GITHUB_CLIENT_ID,
+        clientSecret: config.GITHUB_CLIENT_SECRET,
+        callbackURL: config.CALLBACK_URL,
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
+          // Buscar si existe un usuario
           const user = await userService.findOneUserByGmail(
             profile._json.email
           );
-          if (user) return done(null, user);
+          // Si existe
+          if (user) {
+            //Generar un Token y enviarlo junto a los datos del usuario
+            const token = jwt.sign(user, config.JWT_SECRET);
+            return done(null, { ...user, token });
+          }
+          // Si no existe un usuario, Creamos uno
 
-          //const result = await cardsModel.create({ products: [] });
+          // Creamos un carrito vacio y le agregamos su cart: ObjectId()
           const result = await carritoService.createCarrito({ products: [] });
 
           const newUser = await userService.newUser({
@@ -56,12 +66,13 @@ const inicializePassword = () => {
       async (req, username, password, done) => {
         const { first_name, last_name, email, age } = req.body;
         try {
+          //Buscamos si existe un usuario
           const user = await userService.findOneUserByGmail(username);
+          // Si existe => Retornar como user False
           if (user) return done(null, false);
 
-          //Creamos el carrito
           try {
-            //const result = await cardsModel.create({ products: [] });
+            //Creamos el carrito para el nuevo usuario
             const result = await carritoService.createCarrito({ products: [] });
 
             const newUser = {
@@ -73,18 +84,22 @@ const inicializePassword = () => {
               cart: result._id,
             };
 
+            // El role por defecto es user
             let role = "user";
-            if (email == "adminCoder@coder.com" && password == "adminCod3r123")
+            // Si se registra un usuario con los datos del admin - Colocar el role como admin
+            if (
+              email == config.USER_ADMIN_GMAIL &&
+              password == config.USER_ADMIN_PASSW
+            )
               role = "admin";
 
             const user = await userService.newUser({ ...newUser, role });
 
             return done(null, user);
           } catch (error) {
-            console.error(error);
-            res
+            return res
               .status(500)
-              .json({ message: "error: no se logro leer el archivo" });
+              .json({ status: "error", message: "No se creo el usuario" });
           }
         } catch (error) {
           done("Error to register\n" + error);
@@ -108,9 +123,28 @@ const inicializePassword = () => {
           //Update Last Connection
           await userService.updateLastConnection(user._id);
 
-          return done(null, user);
+          const token = jwt.sign(user, JWT_SECRET);
+
+          return done(null, { ...user, token });
         } catch (error) {
           return done("Error Login: " + error);
+        }
+      }
+    )
+  );
+
+  passport.use(
+    "jwt",
+    new PassportJWT(
+      {
+        secretOrKey: config.JWT_SECRET,
+        jwtFromRequest: ExtractJWT.fromUrlQueryParameter("secret_token"),
+      },
+      async (token, done) => {
+        try {
+          return done(null, token.user);
+        } catch (error) {
+          return done(error);
         }
       }
     )
