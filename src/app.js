@@ -38,7 +38,7 @@ const servidor = express();
 
 //Establecer uso de JSON
 servidor.use(express.json());
-servidor.use(express.urlencoded({ extended: true }));
+//servidor.use(express.urlencoded({ extended: true }));
 
 //Inicializamos el motor de plantillas
 servidor.engine("hbs", handlebars.engine({ extname: ".hbs" }));
