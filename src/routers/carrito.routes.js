@@ -1,4 +1,6 @@
 import { Router } from "express";
+import mercadopage from "mercadopago";
+import config from "../config/config.js";
 
 import {
   carritoService,
@@ -13,20 +15,24 @@ ruta.get("/:cid", async (req, res) => {
   const cid = req.params.cid;
   try {
     const carrito = await carritoService.getOneCarrito(cid);
-    res.send(carrito);
+    return res.send(carrito);
   } catch (error) {
     req.logger.error("No existe ese carrito");
-    res.status(404).json({ message: "error: No existe ese carrito" });
+    return res.status(404).json({ message: "error: No existe ese carrito" });
   }
 });
 
 ruta.post("/", async (req, res) => {
   try {
     const result = await carritoService.createCarrito({ products: [] });
-    res.json({ id: result._id, products: result.products, message: "success" });
+    return res.json({
+      id: result._id,
+      products: result.products,
+      message: "success",
+    });
   } catch (error) {
     req.logger.fatal("No se creo el carrito");
-    res.status(500).json({ message: "Something Wrong" });
+    return res.status(500).json({ message: "Something Wrong" });
   }
 });
 
@@ -115,8 +121,6 @@ ruta.post("/:cid/product/:pid", authUser, async (req, res) => {
   }
 });
 
-ruta.put("/:cid", async (req, res) => {});
-
 ruta.put("/:cid/product/:pid", authUser, async (req, res) => {
   const cid = req.params.cid;
   const pid = req.params.pid;
@@ -149,7 +153,7 @@ ruta.put("/:cid/product/:pid", authUser, async (req, res) => {
 
     return res.json({
       status: "success",
-      message: "Update Success",
+      message: "Se actualizo la cantidad con exito",
     });
   } catch (error) {
     return res.json({ status: "error", message: "Ocurio un error" });
@@ -180,7 +184,10 @@ ruta.delete("/:cid/product/:pid", authUser, async (req, res) => {
             .json({ message: "No se actualizo el carrito" });
         }
 
-        return res.send({ status: "success", message: "Eliminado Con exito" });
+        return res.send({
+          status: "success",
+          message: "Eliminado Del carrito con exito",
+        });
       } else return res.status(404).json({ message: "Not Found" });
     } catch (error) {
       req.logger.error("No existe ese producto");
@@ -207,7 +214,10 @@ ruta.delete("/:cid", async (req, res) => {
       return res.status(500).json({ message: "No se actualizo el carrito" });
     }
 
-    return res.send({ message: "success" });
+    return res.send({
+      message: "success",
+      message: "Se vacio el carrito con exito",
+    });
   } catch (error) {
     req.logger.error("No existe ese carrito");
     return res.status(404).json({ message: "No existe ese carrito" });
@@ -215,25 +225,96 @@ ruta.delete("/:cid", async (req, res) => {
 });
 
 ruta.post("/:cid/purchase", authUser, async (req, res) => {
+  //GET PARAMS /:cid
   const idCarrito = req.params.cid;
-  const user = req.session.user;
+  
   try {
+    //GET Cart BY idCarrito
     const carrito = await carritoService.getOneCarrito(idCarrito);
+
+    // Si existe el carrito
     if (carrito) {
+      //Obtenemos los productos del carrito
       const products = carrito.products;
 
+      //Si la lista de productos no esta vacio
       if (products.length != 0) {
+        // Filtramos los productos donde la cantidad pedida no supere al stock del producto
         const filterCardsToBuy = products.filter(
           (elem) => elem.product.stock >= elem.quantity
         );
+        // Si la lista filtrada anteriormente no esta vacio
         if (filterCardsToBuy.length != 0) {
-          //En Base al array restar al stock del producto
+          mercadopage.configure({
+            access_token: config.MERCADO_PAGO_ACCESS_TOKEN,
+          });
+
+          const listEnviar = [];
+          for (let i = 0; i < filterCardsToBuy.length; i++) {
+            const element = filterCardsToBuy[i];
+            listEnviar.push({
+              title: element.product.title,
+              unit_price: element.product.price,
+              currency_id: "ARS",
+              quantity: element.quantity,
+            })
+          }
+
+          console.log(listEnviar);
+
+          try {
+            const result = await mercadopage.preferences.create({
+              items: listEnviar,
+              notification_url: `${config.URL_PRODUCCION}/api/payment/webhook`,
+              back_urls: {
+                success: `${config.URL_PRODUCCION}/payment/success`,
+              },
+            });
+            console.log(result);
+            return res.json(result.body);
+          } catch (error) {
+            return res
+              .status(500)
+              .json({status: 'error', message: "Something goes wrong with Mercado pago" });
+          }
+        }
+      } else {
+        req.logger.error("Carrito esta vacio");
+        return res
+          .status(400)
+          .json({ status: "error", message: "Carrito Vacio" });
+      }
+    } else {
+      req.logger.error("No existe ese carrito");
+      return res
+        .status(404)
+        .json({ status: "error", message: "Cart Not Found" });
+    }
+  } catch (error) {
+    req.logger.error("No existe ese carrito");
+    return res
+      .status(404)
+      .json({ status: "error", message: "No existe ese carrito" });
+  }
+});
+
+export default ruta;
+
+/**
+ * 
+ * 
+        // Si la lista filtrada anteriormente no esta vacio
+        if (filterCardsToBuy.length != 0) {
+
+          //Total: esta variable es para colocar el total de todo lo que tiene q pagar
           let total = 0;
           for (let i = 0; i < filterCardsToBuy.length; i++) {
             const element = filterCardsToBuy[i];
 
+            // Restamos el stockActual del producto con la cantidad pedida del usuario
             const stockActualProduct = element.product.stock - element.quantity;
 
+            // Actualizamos los productos de cada uno de lo filtrados
             try {
               await productsService.updateProducts(
                 element.product._id,
@@ -243,6 +324,7 @@ ruta.post("/:cid/purchase", authUser, async (req, res) => {
                 user
               );
 
+              // Actualizamos la variable total
               total += element.quantity * element.product.price;
             } catch (error) {
               req.logger.fatal("No se actualizo el stock del producto");
@@ -289,18 +371,4 @@ ruta.post("/:cid/purchase", authUser, async (req, res) => {
         }
 
         return res.json({ message: "Operacion Exitosa" });
-      } else {
-        req.logger.error("Carrito esta vacio");
-        return res.status(400).json({ message: "Carrito Vacio" });
-      }
-    } else {
-      req.logger.error("No existe ese carrito");
-      return res.status(404).json({ message: "Cart Not Found" });
-    }
-  } catch (error) {
-    req.logger.error("No existe ese carrito");
-    return res.status(404).json({ message: "No existe ese carrito" });
-  }
-});
-
-export default ruta;
+ */

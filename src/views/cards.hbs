@@ -25,21 +25,25 @@
     const formSubmit = document.querySelector('#form-delete-carrito');
     const cid = "{{data._id}}";
 
-    button.addEventListener('click', () => {
+    button.addEventListener('click', async () => {
         //const cid = "{{data._id}}";
+        console.log("CLICK")
+        try {
+            const res = await fetch(`/api/carts/${cid}/purchase`, {method: 'POST'});
+            const data = await res.json();
+            console.log(data);
+            window.location.href = data.init_point;
+        }catch(e) {
+            console.error(e)
+        }
         
-        fetch(`/api/carts/${cid}/product/:pid`, {method: 'POST'}).then(() => {
-            alert('Se Compro con exito');
-        }).catch(e => {
-            alert('No se agrego al carrito');
-            console.log(e);
-        })
    });
 
     {{#each data.products}}
         document.querySelector("#button-delete-carrito-{{@index}}").addEventListener('click', () => { 
                 fetch(`/api/carts/${cid}/product/{{this.product._id}}`, {method: 'DELETE'}).then(() => {
                 alert('Se Elimino con exito');
+                window.location.reload();
             }).catch(e => {
                 alert('No se agrego al carrito');
                 console.log(e);

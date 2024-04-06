@@ -103,9 +103,9 @@ ruta.get("/product/:pid", auth, async (req, res) => {
 ruta.get("/carts/:cid", auth, async (req, res) => {
   const cid = req.params.cid;
   try {
-    const carrito = await carritoService.getOneCarrito(cid, false);
+    const carrito = await carritoService.getOneCarrito(cid, true);
     return res.render("cards", {
-      data: carrito
+      data: carrito,
     });
   } catch (error) {
     req.logger.error("No existe el carrito");
@@ -119,6 +119,10 @@ ruta.get("/newProduct", authAdmin, (req, res) => {
 
 ruta.get("/changePassword", auth, (req, res) => {
   return res.render("recoverPassword");
+});
+
+ruta.get("/payment/success", auth, (req, res) => {
+  return res.render("payment_success");
 });
 
 //                Views Session
@@ -137,8 +141,7 @@ ruta.get("/register", justPublicWitoutSession, (req, res) => {
 });
 
 ruta.get("/updatePassword", auth, (req, res) => {
-  if (req.session.user.updatePassword == null)
-    return res.render("index", {});
+  if (req.session.user.updatePassword == null) return res.render("index", {});
   else return res.render("recoverPassword", {});
 });
 

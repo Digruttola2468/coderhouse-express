@@ -30,7 +30,8 @@
     "socket.io": "^4.7.2",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",
-    "winston": "^3.11.0"
+    "winston": "^3.11.0",
+    "mercadopago": "^1.5.16"
   },
   "devDependencies": {
     "chai": "^5.1.0",

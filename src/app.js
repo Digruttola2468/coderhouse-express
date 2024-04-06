@@ -15,6 +15,7 @@ import CarritoRouter from "./routers/carrito.routes.js";
 import viewsRouter from "./routers/views.routes.js";
 import sessionRouter from "./routers/session.routes.js";
 import userRouter from "./routers/user.routes.js";
+import paymentRoute from './routers/payment.routes.js'
 
 // --- LOGGER ---
 import {
@@ -100,6 +101,7 @@ servidor.use("/api/session", sessionRouter);
 servidor.use("/api/users", userRouter);
 servidor.use("/api/products", ProductsRouter);
 servidor.use("/api/carts", CarritoRouter);
+servidor.use("/api/payment", paymentRoute)
 servidor.use(viewsRouter);
 
 servidor.use(errors);
