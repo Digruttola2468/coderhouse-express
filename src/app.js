@@ -111,6 +111,6 @@ mongoose
   .connect(config.mongoURL, { dbName: config.mongoDBName })
   .then(() => {
     //Iniciamos el servidor
-    servidor.listen(8080, () => {});
+    servidor.listen(config.PORT, () => {});
   })
   .catch((e) => {});
