@@ -67,7 +67,7 @@ servidor.use("/static", express.static("./src/public"));
 inicializePassword();
 
 // LOGGER
-servidor.use(middlewareDevLogger);
+servidor.use(middlewareProdLogger);
 servidor.get("/loggerTest", (req, res) => {
   req.logger.debug("DEBUG");
   req.logger.http("HTTP");

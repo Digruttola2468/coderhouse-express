@@ -1,7 +1,7 @@
 import { Router } from "express";
 import passport from "passport";
 import UserInfoDTO from "../DTO/usuario.dto.js";
-import { userService } from "../services/index.js";
+import { userService } from "../services/index.repository.js";
 import { createHash, isValidPassword } from "../utils.js";
 
 const router = Router();

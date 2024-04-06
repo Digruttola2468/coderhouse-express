@@ -5,7 +5,7 @@ import passportJwt from "passport-jwt";
 import jwt from "jsonwebtoken";
 
 import { createHash, isValidPassword } from "../utils.js";
-import { carritoService, userService } from "../services/index.js";
+import { carritoService, userService } from "../services/index.repository.js";
 import config from "./config.js";
 
 const LocalStrategy = local.Strategy;

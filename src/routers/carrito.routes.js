@@ -6,7 +6,7 @@ import {
   carritoService,
   productsService,
   ticketService,
-} from "../services/index.js";
+} from "../services/index.repository.js";
 import { authUser } from "./session.routes.js";
 
 const ruta = Router();

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { productsService } from "../services/index.js";
+import { productsService } from "../services/index.repository.js";
 import { authAdmin } from "./session.routes.js";
 
 const ruta = Router();
