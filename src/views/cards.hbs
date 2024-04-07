@@ -27,11 +27,9 @@
 
     button.addEventListener('click', async () => {
         //const cid = "{{data._id}}";
-        console.log("CLICK")
         try {
             const res = await fetch(`/api/carts/${cid}/purchase`, {method: 'POST'});
             const data = await res.json();
-            console.log(data);
             window.location.href = data.init_point;
         }catch(e) {
             console.error(e)
