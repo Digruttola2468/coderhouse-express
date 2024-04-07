@@ -1,10 +1,13 @@
-import config from "../config/config.js";
+const { default: CarritoMongo } = await import("./mongo/carrito.mongo.js");
+const { default: TicketMongo } = await import("./mongo/ticket.mongo.js");
+const { default: UserMongo } = await import("./mongo/user.mongo.js");
+const { default: ProductsMongo } = await import("./mongo/products.mongo.js");
 
-export let Products;
-export let Carrito;
-export let Ticket;
-export let Users;
-
+export const Products = ProductsMongo;
+export let Carrito = CarritoMongo;
+export let Ticket = TicketMongo;
+export let Users = UserMongo;
+/*
 switch (config.persistenci) {
   case "MEMORY":
     const { default: ProductsMemory } = await import(
@@ -54,3 +57,4 @@ switch (config.persistenci) {
   default:
     throw new Error("Persistencie is not configured !!");
 }
+*/
