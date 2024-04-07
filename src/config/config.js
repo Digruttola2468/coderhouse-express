@@ -17,5 +17,5 @@ export default {
     MERCADO_PAGO_SAMPLE_PUBLIC_KEY: process.env.MERCADO_PAGO_SAMPLE_PUBLIC_KEY,
     MERCADO_PAGO_ACCESS_TOKEN: process.env.MERCADO_PAGO_ACCESS_TOKEN,
     URL_PRODUCCION: process.env.URL_PRODUCCION,
-    PORT: process.env.PORT || 4505,
+    PORT: process.env.PORT || 8080,
 }
