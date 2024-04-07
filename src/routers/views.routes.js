@@ -70,6 +70,8 @@ ruta.get("/products", auth, async (req, res) => {
     products.prevLink = prevLink;
     products.nextLink = nextLink;
 
+    console.log(products)
+
     return res.render("products", {
       data: products,
       user,
